@@ -91,40 +91,9 @@
                             </div>
                         </div>
                         
-                        <!-- 指派给 -->
-                        <div>
-                            <div class="form-group">
-                                <label for="assigneeId" class="form-label">指派给</label>
-                                <select id="assigneeId" name="assigneeId" class="form-select">
-                                    <option value="">暂不指派</option>
-                                    <option th:each="user : ${users}" 
-                                            th:value="${user.id}" 
-                                            th:text="${user.realName} + ' (' + ${user.username} + ')'">
-                                        用户
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
+
                         
-                        <!-- 截止日期 -->
-                        <div>
-                            <div class="form-group">
-                                <label for="dueDate" class="form-label">截止日期</label>
-                                <div class="flex gap-2">
-                                    <input type="datetime-local" id="dueDate" name="dueDate" class="form-input">
-                                    <div class="flex-shrink-0">
-                                        <select id="dueDateQuick" class="form-select text-sm">
-                                            <option value="">快捷设置</option>
-                                            <option value="today">今天</option>
-                                            <option value="tomorrow">明天</option>
-                                            <option value="thisWeek">本周末</option>
-                                            <option value="nextWeek">下周</option>
-                                            <option value="nextMonth">下月</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
                 
@@ -224,53 +193,7 @@
                 }
             });
             
-            // 快捷日期设置
-            const dueDateInput = $('#dueDate');
-            const dueDateQuick = $('#dueDateQuick');
-            
-            dueDateQuick.on('change', function() {
-                const quickValue = $(this).val();
-                if (!quickValue) return;
-                
-                const now = new Date();
-                let targetDate = new Date(now);
-                
-                switch(quickValue) {
-                    case 'today':
-                        targetDate.setHours(23, 59);
-                        break;
-                    case 'tomorrow':
-                        targetDate.setDate(now.getDate() + 1);
-                        targetDate.setHours(18, 0);
-                        break;
-                    case 'thisWeek':
-                        const daysUntilFriday = 5 - now.getDay();
-                        targetDate.setDate(now.getDate() + daysUntilFriday);
-                        targetDate.setHours(18, 0);
-                        break;
-                    case 'nextWeek':
-                        targetDate.setDate(now.getDate() + 7);
-                        targetDate.setHours(18, 0);
-                        break;
-                    case 'nextMonth':
-                        targetDate.setMonth(now.getMonth() + 1);
-                        targetDate.setHours(18, 0);
-                        break;
-                }
-                
-                // 格式化为 datetime-local 格式
-                const year = targetDate.getFullYear();
-                const month = String(targetDate.getMonth() + 1).padStart(2, '0');
-                const day = String(targetDate.getDate()).padStart(2, '0');
-                const hours = String(targetDate.getHours()).padStart(2, '0');
-                const minutes = String(targetDate.getMinutes()).padStart(2, '0');
-                
-                const dateTimeString = `${year}-${month}-${day}T${hours}:${minutes}`;
-                dueDateInput.val(dateTimeString);
-                
-                // 重置快捷选择
-                dueDateQuick.val('');
-            });
+
             
             // 输入时移除错误样式
             $('.form-input, .form-select').on('input change', function() {

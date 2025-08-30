@@ -150,10 +150,6 @@ public class TicketController {
         Workspace currentWorkspace = workspaceService.getCurrentWorkspace(workspaceId, userDefaultWorkspaceId, workspaces);
         model.addAttribute("currentWorkspace", currentWorkspace);
         
-        // 获取用户列表
-        List<User> users = userService.getAllEnabled();
-        model.addAttribute("users", users);
-        
         // 枚举值
         model.addAttribute("priorities", Ticket.Priority.values());
         model.addAttribute("types", Ticket.Type.values());
@@ -177,9 +173,7 @@ public class TicketController {
                               @RequestParam String priority,
                               @RequestParam String type,
                               @RequestParam Long workspaceId,
-                              @RequestParam(required = false) Long assigneeId,
                               @RequestParam(required = false) String estimatedHours,
-                              @RequestParam(required = false) String dueDate,
                               RedirectAttributes redirectAttributes) {
         
         try {
@@ -189,14 +183,9 @@ public class TicketController {
             ticket.setPriority(Ticket.Priority.valueOf(priority));
             ticket.setType(Ticket.Type.valueOf(type));
             ticket.setWorkspaceId(workspaceId);
-            ticket.setAssigneeId(assigneeId);
             
             if (estimatedHours != null && !estimatedHours.trim().isEmpty()) {
                 ticket.setEstimatedHours(new BigDecimal(estimatedHours));
-            }
-            
-            if (dueDate != null && !dueDate.trim().isEmpty()) {
-                ticket.setDueDate(LocalDateTime.parse(dueDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")));
             }
             
             Ticket createdTicket = ticketService.create(ticket);
