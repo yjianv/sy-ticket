@@ -83,9 +83,9 @@ public class HomeController {
             model.addAttribute("resolvedCount", resolvedCount);
             model.addAttribute("closedCount", closedCount);
             
-            // 用户相关的工单
+            // 用户相关的工单（仪表盘限制显示10条）
             if (userId != null) {
-                model.addAttribute("userTickets", ticketService.getUserRelatedTickets(userId, currentWorkspace.getId()));
+                model.addAttribute("userTickets", ticketService.getUserRelatedTickets(userId, currentWorkspace.getId(), 10));
             }
         }
         

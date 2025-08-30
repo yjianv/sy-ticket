@@ -53,6 +53,16 @@ public interface TicketMapper {
     List<Ticket> findUserRelatedTickets(@Param("userId") Long userId, @Param("workspaceId") Long workspaceId);
     
     /**
+     * 查询用户相关的工单（限制数量）
+     * 
+     * @param userId 用户ID
+     * @param workspaceId 工作空间ID
+     * @param limit 限制数量
+     * @return 工单列表
+     */
+    List<Ticket> findUserRelatedTicketsWithLimit(@Param("userId") Long userId, @Param("workspaceId") Long workspaceId, @Param("limit") Integer limit);
+    
+    /**
      * 插入新工单
      * 
      * @param ticket 工单信息

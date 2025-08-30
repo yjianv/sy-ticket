@@ -133,6 +133,21 @@
         ORDER BY t.created_at DESC
     </select>
 
+    <!-- 查询用户相关的工单（限制数量） -->
+    <select id="findUserRelatedTicketsWithLimit" resultMap="TicketWithRelationsResultMap">
+        SELECT <include refid="ticketWithRelationsColumns"/>
+        FROM tickets t
+        <include refid="ticketJoins"/>
+        WHERE (t.creator_id = #{userId} OR t.assignee_id = #{userId})
+        <if test="workspaceId != null">
+            AND t.workspace_id = #{workspaceId}
+        </if>
+        ORDER BY t.created_at DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
+
     <!-- 统计工单数量 -->
     <select id="countWithConditions" resultType="int">
         SELECT COUNT(*)

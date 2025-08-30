@@ -80,6 +80,18 @@ public class TicketService {
     }
     
     /**
+     * 获取用户相关的工单（限制数量）
+     * 
+     * @param userId 用户ID
+     * @param workspaceId 工作空间ID
+     * @param limit 限制数量
+     * @return 工单列表
+     */
+    public List<Ticket> getUserRelatedTickets(Long userId, Long workspaceId, Integer limit) {
+        return ticketMapper.findUserRelatedTicketsWithLimit(userId, workspaceId, limit);
+    }
+    
+    /**
      * 根据ID获取工单详情
      * 
      * @param id 工单ID

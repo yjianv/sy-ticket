@@ -101,9 +101,85 @@
                 </div>
             </div>
         </div>
-        
+
+        <!-- 我的工单 -->
+        <div class="card" style="margin-bottom: var(--space-8);" th:if="${userTickets != null and !userTickets.isEmpty()}">
+            <div class="card-header">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3 class="card-title">我相关的工单</h3>
+                        <p style="margin-top: var(--space-1); font-size: var(--text-sm); color: var(--color-text-secondary);">最近的10条工单（包括我创建的和指派给我的）</p>
+                    </div>
+                    <a href="/tickets" class="btn btn-outline" style="font-size: var(--text-sm);">
+                        <i class="fas fa-list" style="margin-right: var(--space-2);"></i>
+                        查看全部
+                    </a>
+                </div>
+            </div>
+            <div style="overflow: hidden;">
+                <table class="table" style="margin-bottom: 0;">
+                    <thead>
+                    <tr>
+                        <th style="width: 40%;">工单</th>
+                        <th style="width: 15%;">状态</th>
+                        <th style="width: 15%;">优先级</th>
+                        <th style="width: 20%;">创建时间</th>
+                        <th style="width: 10%;">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="ticket : ${userTickets}" style="height: 60px;">
+                        <td style="vertical-align: middle;">
+                            <div>
+                                <div style="font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--color-text-primary); margin-bottom: var(--space-1);" th:text="${ticket.ticketNo}">工单编号</div>
+                                <div style="font-size: var(--text-xs); color: var(--color-text-secondary); line-height: 1.4;" th:text="${#strings.abbreviate(ticket.title, 45)}">工单标题</div>
+                            </div>
+                        </td>
+                        <td style="vertical-align: middle;">
+                                <span class="badge workspace-badge"
+                                      th:classappend="'status-' + ${#strings.toLowerCase(ticket.status)}"
+                                      th:text="${ticket.status.description}"
+                                      style="font-size: var(--text-xs); padding: var(--space-1) var(--space-2);">状态</span>
+                        </td>
+                        <td style="vertical-align: middle;">
+                                <span class="badge workspace-badge"
+                                      th:classappend="'priority-' + ${#strings.toLowerCase(ticket.priority)}"
+                                      th:text="${ticket.priority.description}"
+                                      style="font-size: var(--text-xs); padding: var(--space-1) var(--space-2);">优先级</span>
+                        </td>
+                        <td style="font-size: var(--text-xs); color: var(--color-text-secondary); vertical-align: middle;">
+                            <span th:text="${#temporals.format(ticket.createdAt, 'MM-dd HH:mm')}">创建时间</span>
+                        </td>
+                        <td style="font-size: var(--text-xs); font-weight: var(--font-medium); vertical-align: middle;">
+                            <a th:href="@{/tickets/{id}(id=${ticket.id})}" class="btn-link" style="color: var(--color-primary-600); text-decoration: none;">查看</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="card-footer" style="background-color: var(--color-gray-50); border-top: 1px solid var(--color-border-secondary);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; gap: var(--space-4); font-size: var(--text-sm); color: var(--color-text-secondary);">
+                            <a href="/tickets?status=OPEN" style="color: var(--color-primary-600); text-decoration: none;">
+                                待处理工单
+                            </a>
+                            <a href="/tickets?status=IN_PROGRESS" style="color: var(--color-warning-600); text-decoration: none;">
+                                处理中工单
+                            </a>
+                            <a href="/tickets?status=RESOLVED" style="color: var(--color-success-600); text-decoration: none;">
+                                已解决工单
+                            </a>
+                        </div>
+                        <a href="/tickets" style="font-size: var(--text-sm); color: var(--color-primary-600); text-decoration: none; font-weight: var(--font-medium);">
+                            查看所有工单 →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 快速操作 -->
-        <div class="card" style="margin-bottom: var(--space-8);">
+        <div class="card">
             <div class="card-header">
                 <h3 class="card-title">快速操作</h3>
             </div>
@@ -141,58 +217,7 @@
                 </div>
             </div>
         </div>
-        
-        <!-- 我的工单 -->
-        <div class="card" th:if="${userTickets != null and !userTickets.isEmpty()}">
-            <div class="card-header">
-                <h3 class="card-title">我相关的工单</h3>
-                <p style="margin-top: var(--space-1); font-size: var(--text-sm); color: var(--color-text-secondary);">包括我创建的和指派给我的工单</p>
-            </div>
-            <div style="overflow: hidden;">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>工单</th>
-                            <th>状态</th>
-                            <th>优先级</th>
-                            <th>创建时间</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="ticket : ${userTickets}">
-                            <td>
-                                <div>
-                                    <div style="font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--color-text-primary);" th:text="${ticket.ticketNo}">工单编号</div>
-                                    <div style="font-size: var(--text-sm); color: var(--color-text-secondary);" th:text="${#strings.abbreviate(ticket.title, 50)}">工单标题</div>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="badge workspace-badge"
-                                      th:classappend="'status-' + ${#strings.toLowerCase(ticket.status)}"
-                                      th:text="${ticket.status.description}">状态</span>
-                            </td>
-                            <td>
-                                <span class="badge workspace-badge"
-                                      th:classappend="'priority-' + ${#strings.toLowerCase(ticket.priority)}"
-                                      th:text="${ticket.priority.description}">优先级</span>
-                            </td>
-                            <td style="font-size: var(--text-sm); color: var(--color-text-secondary);">
-                                <span th:text="${#temporals.format(ticket.createdAt, 'yyyy-MM-dd HH:mm')}">创建时间</span>
-                            </td>
-                            <td style="font-size: var(--text-sm); font-weight: var(--font-medium);">
-                                <a th:href="@{/tickets/{id}(id=${ticket.id})}" class="btn-link" style="color: var(--color-primary-600);">查看</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <div class="card-footer">
-                    <a href="/tickets" style="font-size: var(--text-sm); color: var(--color-primary-600); text-decoration: none;">查看更多工单 →</a>
-                </div>
-            </div>
-        </div>
-        
+
         <!-- 空状态提示 -->
         <div class="empty-state" th:if="${currentWorkspace == null}">
             <div class="empty-state-icon">
