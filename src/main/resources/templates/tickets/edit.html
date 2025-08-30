@@ -12,131 +12,199 @@
 <body>
     <div layout:fragment="content">
         <!-- 页面标题 -->
-        <div class="mb-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900" th:text="'编辑工单 - ' + ${ticket.ticketNo}">编辑工单</h1>
-                    <p class="text-gray-600">修改工单信息</p>
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-header-left">
+                    <h1 class="page-header-title" th:text="'编辑工单 - ' + ${ticket.ticketNo}">编辑工单</h1>
+                    <p class="page-header-subtitle">修改工单信息</p>
                 </div>
-                <div class="flex space-x-3">
-                    <a th:href="@{/tickets/{id}(id=${ticket.id})}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-150 ease-in-out">
-                        <i class="fas fa-eye mr-2"></i>查看详情
+                <div class="page-header-right">
+                    <a th:href="@{/tickets/{id}(id=${ticket.id})}" class="btn btn-primary">
+                        <i class="fas fa-eye"></i>查看详情
                     </a>
-                    <a href="/tickets" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-150 ease-in-out">
-                        <i class="fas fa-arrow-left mr-2"></i>返回列表
+                    <a href="/tickets" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>返回列表
                     </a>
                 </div>
             </div>
         </div>
         
         <!-- 表单 -->
-        <div class="bg-white shadow rounded-lg">
-            <form id="ticket-form" th:action="@{/tickets/{id}/edit(id=${ticket.id})}" method="POST" class="p-6 space-y-6">
+        <div class="space-y-5">
+            <form id="ticket-form" th:action="@{/tickets/{id}/edit(id=${ticket.id})}" method="POST">
                 <input type="hidden" id="content-input" name="content" value=""/>
                 
-                <!-- 基本信息 -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- 工单标题 -->
-                    <div class="lg:col-span-2">
-                        <label for="title" class="block text-sm font-medium text-gray-700 mb-2">工单标题 *</label>
-                        <input type="text" id="title" name="title" required 
-                               th:value="${ticket.title}"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                               placeholder="请输入工单标题">
-                    </div>
-                    
-                    <!-- 工单编号（只读） -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">工单编号</label>
-                        <input type="text" th:value="${ticket.ticketNo}" readonly
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500">
-                    </div>
-                    
-                    <!-- 工作空间（只读） -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">工作空间</label>
-                        <input type="text" th:value="${ticket.workspace?.name}" readonly
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500">
-                    </div>
-                    
-                    <!-- 优先级 -->
-                    <div>
-                        <label for="priority" class="block text-sm font-medium text-gray-700 mb-2">优先级 *</label>
-                        <select id="priority" name="priority" required 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                            <option th:each="priority : ${priorities}" 
-                                    th:value="${priority.name()}" 
-                                    th:text="${priority.description}"
-                                    th:selected="${priority.name() == ticket.priority.name()}">
-                                优先级
-                            </option>
-                        </select>
-                    </div>
-                    
-                    <!-- 工单类型 -->
-                    <div>
-                        <label for="type" class="block text-sm font-medium text-gray-700 mb-2">工单类型 *</label>
-                        <select id="type" name="type" required 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                            <option th:each="type : ${types}" 
-                                    th:value="${type.name()}" 
-                                    th:text="${type.description}"
-                                    th:selected="${type.name() == ticket.type.name()}">
-                                类型
-                            </option>
-                        </select>
-                    </div>
-                    
-                    <!-- 指派给 -->
-                    <div>
-                        <label for="assigneeId" class="block text-sm font-medium text-gray-700 mb-2">指派给</label>
-                        <select id="assigneeId" name="assigneeId" disabled
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed" title="指派功能已禁用">
-                            <option value="">暂不指派</option>
-                            <option th:each="user : ${users}" 
-                                    th:value="${user.id}" 
-                                    th:text="${user.realName} + ' (' + ${user.username} + ')'"
-                                    th:selected="${ticket.assignee != null and user.id == ticket.assignee.id}">
-                                用户
-                            </option>
-                        </select>
-                    </div>
-                    
-                    <!-- 预估工时 -->
-                    <div>
-                        <label for="estimatedHours" class="block text-sm font-medium text-gray-700 mb-2">预估工时（小时）</label>
-                        <input type="number" id="estimatedHours" name="estimatedHours" min="0" step="0.5"
-                               th:value="${ticket.estimatedHours}"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                               placeholder="例如：8">
-                    </div>
-                    
-                    <!-- 实际工时 -->
-                    <div>
-                        <label for="actualHours" class="block text-sm font-medium text-gray-700 mb-2">实际工时（小时）</label>
-                        <input type="number" id="actualHours" name="actualHours" min="0" step="0.5"
-                               th:value="${ticket.actualHours}"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                               placeholder="例如：6">
-                    </div>
-                    
-                    <!-- 截止日期 -->
-                    <div>
-                        <label for="dueDate" class="block text-sm font-medium text-gray-700 mb-2">截止日期</label>
-                        <input type="datetime-local" id="dueDate" name="dueDate"
-                               th:value="${ticket.dueDate != null ? #temporals.format(ticket.dueDate, 'yyyy-MM-dd''T''HH:mm') : ''}"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                </div>
+                <!-- 编辑工单表单 -->
+                <div class="card" id="ticket-form-card">
+                    <div class="card-body space-y-6" style="padding: 1.5rem;">
                 
-                <!-- 工单内容 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">工单描述 *</label>
-                    <div class="border border-gray-300 rounded-lg">
-                        <div id="editor" class="min-h-[300px]"></div>
-                    </div>
-                    <p class="mt-2 text-sm text-gray-500">支持富文本编辑，可以直接粘贴或拖拽图片</p>
-                </div>
+                        <!-- 工单标题 -->
+                        <div>
+                            <div class="form-group">
+                                <label for="title" class="form-label required">工单标题</label>
+                                <input type="text" id="title" name="title" required class="form-input"
+                                       th:value="${ticket.title}"
+                                       placeholder="清晰简洁地描述您的问题或需求" maxlength="100">
+                                <div class="form-hint flex justify-between mt-2">
+                                    <span class="text-sm text-gray-500">建议：用一句话概括主要问题</span>
+                                    <span id="titleCount" class="text-gray-400">0/100</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 优先级和工单类型选择 -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- 优先级选择 -->
+                            <div>
+                                <label class="form-label required block mb-2">优先级</label>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                    <div th:each="priority : ${priorities}" class="priority-option">
+                                        <input type="radio" 
+                                               th:id="'priority-' + ${priority.name()}"
+                                               name="priority" 
+                                               th:value="${priority.name()}" 
+                                               th:checked="${priority.name() == ticket.priority.name()}"
+                                               class="hidden priority-input">
+                                        <label th:for="'priority-' + ${priority.name()}" 
+                                               class="priority-card flex items-center justify-center p-2 border-1 border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 transition-colors duration-200"
+                                               th:classappend="${priority.name() == 'LOW'} ? 'hover:bg-green-50' : (${priority.name() == 'MEDIUM'} ? 'hover:bg-yellow-50' : (${priority.name() == 'HIGH'} ? 'hover:bg-orange-50' : 'hover:bg-red-50'))">
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-3 h-3 rounded-full"
+                                                     th:classappend="${priority.name() == 'LOW'} ? 'bg-green-500' : (${priority.name() == 'MEDIUM'} ? 'bg-yellow-500' : (${priority.name() == 'HIGH'} ? 'bg-orange-500' : 'bg-red-500'))">
+                                                </div>
+                                                <span class="text-sm font-medium text-gray-900" th:text="${priority.description}">优先级</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 工单类型选择 -->
+                            <div>
+                                <label class="form-label required block mb-2">工单类型</label>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                                    <div th:each="type : ${types}" class="type-option">
+                                        <input type="radio" 
+                                               th:id="'type-' + ${type.name()}"
+                                               name="type" 
+                                               th:value="${type.name()}" 
+                                               th:checked="${type.name() == ticket.type.name()}"
+                                               class="hidden type-input">
+                                        <label th:for="'type-' + ${type.name()}" 
+                                               class="type-card flex items-center justify-center p-2 border-1 border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-all duration-200">
+                                            <div class="flex items-center space-x-2">
+                                                <i class="text-base text-gray-600"
+                                                   th:classappend="${type.name() == 'BUG'} ? 'fas fa-bug text-red-500' : (${type.name() == 'FEATURE'} ? 'fas fa-lightbulb text-blue-500' : (${type.name() == 'IMPROVEMENT'} ? 'fas fa-arrow-up text-green-500' : (${type.name() == 'QUESTION'} ? 'fas fa-question-circle text-purple-500' : 'fas fa-cog text-gray-500')))">
+                                                </i>
+                                                <span class="text-sm font-medium text-gray-900" th:text="${type.description}">类型</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 只读信息 -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- 工单编号（只读） -->
+                            <div>
+                                <label class="form-label block mb-2">工单编号</label>
+                                <input type="text" th:value="${ticket.ticketNo}" readonly
+                                       class="form-input bg-gray-50 text-gray-500 cursor-not-allowed">
+                            </div>
+                            
+                            <!-- 工作空间（只读） -->
+                            <div>
+                                <label class="form-label block mb-2">工作空间</label>
+                                <input type="text" th:value="${ticket.workspace?.name}" readonly
+                                       class="form-input bg-gray-50 text-gray-500 cursor-not-allowed">
+                            </div>
+                        </div>
+                        
+                        <!-- 其他字段 -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                            <!-- 指派给 -->
+                            <div>
+                                <label for="assigneeId" class="form-label block mb-2">指派给</label>
+                                <select id="assigneeId" name="assigneeId" disabled
+                                        class="form-input bg-gray-100 text-gray-500 cursor-not-allowed" title="指派功能已禁用">
+                                    <option value="">暂不指派</option>
+                                    <option th:each="user : ${users}" 
+                                            th:value="${user.id}" 
+                                            th:text="${user.realName} + ' (' + ${user.username} + ')'"
+                                            th:selected="${ticket.assignee != null and user.id == ticket.assignee.id}">
+                                        用户
+                                    </option>
+                                </select>
+                            </div>
+                            
+                            <!-- 预估工时 -->
+                            <div>
+                                <label for="estimatedHours" class="form-label block mb-2">预估工时（小时）</label>
+                                <input type="number" id="estimatedHours" name="estimatedHours" min="0" step="0.5"
+                                       th:value="${ticket.estimatedHours}"
+                                       class="form-input"
+                                       placeholder="例如：8">
+                            </div>
+                            
+                            <!-- 实际工时 -->
+                            <div>
+                                <label for="actualHours" class="form-label block mb-2">实际工时（小时）</label>
+                                <input type="number" id="actualHours" name="actualHours" min="0" step="0.5"
+                                       th:value="${ticket.actualHours}"
+                                       class="form-input"
+                                       placeholder="例如：6">
+                            </div>
+                            
+                            <!-- 截止日期 -->
+                            <div>
+                                <label for="dueDate" class="form-label block mb-2">截止日期</label>
+                                <input type="datetime-local" id="dueDate" name="dueDate"
+                                       th:value="${ticket.dueDate != null ? #temporals.format(ticket.dueDate, 'yyyy-MM-dd''T''HH:mm') : ''}"
+                                       class="form-input">
+                            </div>
+                        </div>
+                
+                        <!-- 工单描述 -->
+                        <div>
+                            <label class="form-label required block mb-2">工单描述</label>
+                            <div class="description-editor-wrapper">
+                                <div id="editor" class="description-editor"></div>
+                            </div>
+                            <div class="mt-2 flex items-center justify-between">
+                                <p class="text-xs text-gray-500">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    支持富文本编辑，可以直接粘贴或拖拽图片
+                                </p>
+                                <div class="flex space-x-3 text-xs text-gray-400">
+                                    <span><i class="fas fa-keyboard mr-1"></i>快捷键</span>
+                                    <span><i class="fas fa-image mr-1"></i>图片</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 附件上传 -->
+                        <div>
+                            <label class="form-label block mb-2">
+                                附件上传 <span class="text-xs text-gray-500">（可选）</span>
+                            </label>
+                            <div class="drag-drop-area compact" id="file-drop-area">
+                                <div class="flex items-center justify-center">
+                                    <div class="text-center">
+                                        <i class="fas fa-paperclip text-base text-gray-400 mb-1"></i>
+                                        <p class="text-sm text-gray-600">拖拽文件到这里或 
+                                            <button type="button" id="file-select-btn" class="text-blue-600 hover:text-blue-800 underline">选择文件</button>
+                                        </p>
+                                        <p class="text-xs text-gray-400 mt-1">支持图片、PDF、文档等格式，最大10MB</p>
+                                        <input type="file" id="file-input" multiple class="hidden" accept="*/*">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 文件列表 -->
+                            <div id="file-list" class="mt-3 space-y-2"></div>
+                        </div>
                 
                 <!-- 状态信息 -->
                 <div class="bg-gray-50 rounded-lg p-4">
@@ -159,16 +227,26 @@
                     </div>
                 </div>
                 
-                <!-- 提交按钮 -->
-                <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-                    <button type="button" onclick="history.back()" 
-                            class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-150 ease-in-out">
-                        取消
-                    </button>
-                    <button type="submit" id="submit-btn"
-                            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-150 ease-in-out">
-                        <i class="fas fa-save mr-2"></i>保存修改
-                    </button>
+                        <!-- 提交区域 -->
+                        <div class="border-t border-gray-200 pt-5 mt-6">
+                            <div class="flex items-center justify-between ticket-form-submit-desktop">
+                                <div class="text-sm text-gray-600 flex-1">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    工单更新后将记录修改历史，您可以随时查看变更记录
+                                </div>
+                                <div class="flex space-x-3 ml-4">
+                                    <button type="button" onclick="history.back()" 
+                                            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-150 ease-in-out text-sm">
+                                        <i class="fas fa-times mr-1"></i>取消
+                                    </button>
+                                    <button type="submit" id="submit-btn"
+                                            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium">
+                                        <i class="fas fa-save mr-1"></i>保存修改
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -189,10 +267,17 @@
     
     <script th:inline="javascript">
         let editor;
+        let uploadedFiles = [];
         
         $(document).ready(function() {
             // 初始化Editor.js
             initEditor();
+            
+            // 文件上传相关事件
+            initFileUpload();
+            
+            // 初始化表单交互功能
+            initFormInteractions();
             
             // 表单提交处理
             $('#ticket-form').on('submit', function(e) {
@@ -200,6 +285,62 @@
                 submitForm();
             });
         });
+        
+        // 初始化表单交互功能
+        function initFormInteractions() {
+            // 标题字符计数
+            const titleInput = $('#title');
+            const titleCount = $('#titleCount');
+            
+            // 初始化字符计数
+            const initialLength = titleInput.val().length;
+            titleCount.text(initialLength + '/100');
+            
+            titleInput.on('input', function() {
+                const length = $(this).val().length;
+                titleCount.text(length + '/100');
+                
+                // 当接近字数限制时改变颜色
+                if (length > 80) {
+                    titleCount.removeClass('text-gray-400').addClass('text-orange-500');
+                } else if (length === 100) {
+                    titleCount.removeClass('text-orange-500').addClass('text-red-500');
+                } else {
+                    titleCount.removeClass('text-orange-500 text-red-500').addClass('text-gray-400');
+                }
+            });
+            
+            // 优先级卡片选择
+            $('.priority-input').on('change', function() {
+                $('.priority-card').removeClass('border-blue-500 bg-blue-50');
+                if ($(this).is(':checked')) {
+                    $(this).next('.priority-card').addClass('border-blue-500 bg-blue-50');
+                }
+            });
+            
+            // 类型卡片选择
+            $('.type-input').on('change', function() {
+                $('.type-card').removeClass('border-blue-500 bg-blue-50');
+                if ($(this).is(':checked')) {
+                    $(this).next('.type-card').addClass('border-blue-500 bg-blue-50');
+                }
+            });
+            
+            // 初始化选中状态的卡片样式
+            $('.priority-input:checked').next('.priority-card').addClass('border-blue-500 bg-blue-50');
+            $('.type-input:checked').next('.type-card').addClass('border-blue-500 bg-blue-50');
+            
+            // 输入时移除错误样式
+            $('.form-input, .priority-input, .type-input').on('input change', function() {
+                $(this).removeClass('border-red-500');
+                $(this).next('.priority-card, .type-card').removeClass('border-red-500');
+            });
+            
+            // 编辑器获得焦点时移除错误样式
+            $('#editor').on('click', function() {
+                $(this).closest('.description-editor-wrapper').removeClass('error-state');
+            });
+        }
         
         // 初始化编辑器
         function initEditor() {
@@ -285,6 +426,120 @@
             });
         }
         
+        // 初始化文件上传
+        function initFileUpload() {
+            const dropArea = $('#file-drop-area');
+            const fileInput = $('#file-input');
+            const fileSelectBtn = $('#file-select-btn');
+            
+            // 文件选择按钮
+            fileSelectBtn.on('click', function() {
+                fileInput.click();
+            });
+            
+            // 文件输入变化
+            fileInput.on('change', function() {
+                handleFiles(this.files);
+            });
+            
+            // 拖拽事件
+            dropArea.on('dragover', function(e) {
+                e.preventDefault();
+                $(this).addClass('drag-over');
+            });
+            
+            dropArea.on('dragleave', function(e) {
+                e.preventDefault();
+                $(this).removeClass('drag-over');
+            });
+            
+            dropArea.on('drop', function(e) {
+                e.preventDefault();
+                $(this).removeClass('drag-over');
+                const files = e.originalEvent.dataTransfer.files;
+                handleFiles(files);
+            });
+        }
+        
+        // 处理文件上传
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                uploadFile(file);
+            });
+        }
+        
+        // 上传单个文件
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('relatedType', 'TICKET');
+            
+            const fileItem = createFileItem(file);
+            $('#file-list').append(fileItem);
+            
+            $.ajax({
+                url: '/api/files/upload',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        uploadedFiles.push(response.data);
+                        fileItem.find('.file-status').html('<i class="fas fa-check-circle text-green-500"></i>');
+                        fileItem.find('.file-progress').hide();
+                    } else {
+                        fileItem.find('.file-status').html('<i class="fas fa-exclamation-circle text-red-500"></i>');
+                        fileItem.find('.file-name').addClass('text-red-500');
+                        AppUtils.showError('文件上传失败: ' + response.message);
+                    }
+                },
+                error: function() {
+                    fileItem.find('.file-status').html('<i class="fas fa-exclamation-circle text-red-500"></i>');
+                    fileItem.find('.file-name').addClass('text-red-500');
+                    AppUtils.showError('文件上传失败');
+                }
+            });
+        }
+        
+        // 创建文件显示项
+        function createFileItem(file) {
+            const isImage = file.type.startsWith('image/');
+            const fileSize = formatFileSize(file.size);
+            
+            const html = `
+                <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                    <div class="flex-shrink-0 mr-3">
+                        ${isImage ? 
+                            '<i class="fas fa-image text-blue-500"></i>' : 
+                            '<i class="fas fa-file text-gray-500"></i>'
+                        }
+                    </div>
+                    <div class="flex-grow">
+                        <div class="file-name text-sm font-medium text-gray-900">${file.name}</div>
+                        <div class="text-xs text-gray-500">${fileSize}</div>
+                        <div class="file-progress w-full bg-gray-200 rounded-full h-1 mt-1">
+                            <div class="bg-blue-600 h-1 rounded-full animate-pulse" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="file-status ml-3">
+                        <i class="fas fa-spinner fa-spin text-blue-500"></i>
+                    </div>
+                </div>
+            `;
+            
+            return $(html);
+        }
+        
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
         // 提交表单
         async function submitForm() {
             try {
@@ -294,32 +549,76 @@
                 
                 // 验证必填字段
                 const title = $('#title').val().trim();
-                const priority = $('#priority').val();
-                const type = $('#type').val();
+                const priority = $('input[name="priority"]:checked').val();
+                const type = $('input[name="type"]:checked').val();
+                
+                // 移除之前的错误样式
+                $('.form-input').removeClass('border-red-500');
+                $('.priority-card, .type-card').removeClass('border-red-500');
+                $('.description-editor-wrapper').removeClass('error-state');
+                
+                let hasError = false;
+                let firstErrorElement = null;
                 
                 if (!title) {
+                    $('#title').addClass('border-red-500');
                     AppUtils.showError('请输入工单标题');
-                    return;
+                    firstErrorElement = $('#title');
+                    hasError = true;
+                }
+                
+                if (title && title.length < 5) {
+                    $('#title').addClass('border-red-500');
+                    AppUtils.showError('工单标题至少需要5个字符');
+                    firstErrorElement = firstErrorElement || $('#title');
+                    hasError = true;
                 }
                 
                 if (!priority) {
+                    $('.priority-card').addClass('border-red-500');
                     AppUtils.showError('请选择优先级');
-                    return;
+                    firstErrorElement = firstErrorElement || $('.priority-card').first();
+                    hasError = true;
                 }
                 
                 if (!type) {
+                    $('.type-card').addClass('border-red-500');
                     AppUtils.showError('请选择工单类型');
-                    return;
+                    firstErrorElement = firstErrorElement || $('.type-card').first();
+                    hasError = true;
                 }
                 
-                if (!editorData.blocks || editorData.blocks.length === 0) {
-                    AppUtils.showError('请输入工单描述');
+                // 检查编辑器内容
+                const hasContent = editorData.blocks && editorData.blocks.length > 0 && 
+                    editorData.blocks.some(block => block.data && 
+                        ((block.data.text && block.data.text.trim()) || 
+                         (block.data.items && block.data.items.length > 0)));
+                
+                if (!hasContent) {
+                    $('.description-editor-wrapper').addClass('error-state');
+                    AppUtils.showError('请输入工单描述内容');
+                    firstErrorElement = firstErrorElement || $('#editor');
+                    hasError = true;
+                }
+                
+                if (hasError) {
+                    // 滚动到第一个错误元素
+                    if (firstErrorElement) {
+                        $('html, body').animate({
+                            scrollTop: firstErrorElement.offset().top - 100
+                        }, 500);
+                        
+                        // 如果是输入框，则聚焦
+                        if (firstErrorElement.is('input')) {
+                            firstErrorElement.focus();
+                        }
+                    }
                     return;
                 }
                 
                 // 禁用提交按钮
                 const submitBtn = $('#submit-btn');
-                submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>保存中...');
+                submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>保存中...');
                 
                 // 提交表单
                 $('#ticket-form')[0].submit();
@@ -327,7 +626,7 @@
             } catch (error) {
                 console.error('保存失败:', error);
                 AppUtils.showError('保存编辑器内容失败');
-                $('#submit-btn').prop('disabled', false).html('<i class="fas fa-save mr-2"></i>保存修改');
+                $('#submit-btn').prop('disabled', false).html('<i class="fas fa-save mr-1"></i>保存修改');
             }
         }
     </script>
