@@ -17,18 +17,6 @@
                 <div class="page-header-left">
                     <h1 class="page-header-title">创建工单</h1>
                     <p class="page-header-subtitle">填写工单信息并提交</p>
-                    <!-- 当前工作空间提示 -->
-                    <div class="mt-2" th:if="${workspaces != null and !workspaces.empty}">
-                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
-                            <i class="fas fa-folder mr-1"></i>
-                            <span>工作空间：</span>
-                            <span th:each="workspace : ${workspaces}" 
-                                  th:if="${(defaultWorkspaceId != null and workspace.id == defaultWorkspaceId) or (defaultWorkspaceId == null and workspaceStat.first)}"
-                                  th:text="${workspace.name}">
-                                工作空间名称
-                            </span>
-                        </span>
-                    </div>
                 </div>
                 <div class="page-header-right">
                     <a href="/tickets" class="btn btn-secondary">
@@ -39,101 +27,182 @@
         </div>
         
         <!-- 表单 -->
-        <div class="card">
-            <form id="ticket-form" action="/tickets/create" method="POST" class="card-body" style="display: flex; flex-direction: column; gap: var(--space-6);">
+        <div class="space-y-5">
+            <form id="ticket-form" action="/tickets/create" method="POST">
                 <input type="hidden" id="content-input" name="content" value=""/>
                 <!-- 使用默认工作空间或第一个可用工作空间 -->
                 <input type="hidden" id="workspaceId" name="workspaceId" 
                        th:value="${defaultWorkspaceId != null ? defaultWorkspaceId : (workspaces != null and !workspaces.empty ? workspaces[0].id : '')}"/>
                 
-                <!-- 基本信息 -->
-                <div class="space-y-6">
-                    <!-- 工单标题 -->
-                    <div>
-                        <div class="form-group">
-                            <label for="title" class="form-label required">工单标题</label>
-                            <input type="text" id="title" name="title" required class="form-input"
-                                   placeholder="请输入工单标题" maxlength="100">
-                            <div class="form-hint flex justify-between">
-                                <span id="titleCount" class="text-gray-400">0/100</span>
+                <!-- 第一步：基本信息 -->
+                <div class="card" id="step-basic">
+                    <div class="card-header" style="padding: 1rem 1.5rem 0.75rem;">
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-shrink-0">
+                                <div class="w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                                    1
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-medium text-gray-900">基本信息</h3>
+                                <p class="text-xs text-gray-500">请填写工单的基本信息</p>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- 优先级 -->
+                    <div class="card-body space-y-4" style="padding: 1rem 1.5rem 1.5rem;">
+                        <!-- 工单标题 -->
                         <div>
                             <div class="form-group">
-                                <label for="priority" class="form-label required">优先级</label>
-                                <select id="priority" name="priority" required class="form-select">
-                                    <option th:each="priority : ${priorities}" 
-                                            th:value="${priority.name()}" 
-                                            th:text="${priority.description}"
-                                            th:selected="${priority.name() == 'MEDIUM'}">
-                                        优先级
-                                    </option>
-                                </select>
+                                <label for="title" class="form-label required">工单标题</label>
+                                <input type="text" id="title" name="title" required class="form-input"
+                                       placeholder="清晰简洁地描述您的问题或需求" maxlength="100">
+                                <div class="form-hint flex justify-between mt-2">
+                                    <span class="text-sm text-gray-500">建议：用一句话概括主要问题</span>
+                                    <span id="titleCount" class="text-gray-400">0/100</span>
+                                </div>
                             </div>
                         </div>
                         
-                        <!-- 工单类型 -->
+                        <!-- 优先级和工单类型选择 -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- 优先级选择 -->
+                            <div>
+                                <label class="form-label required block mb-2">优先级</label>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                    <div th:each="priority : ${priorities}" class="priority-option">
+                                        <input type="radio" 
+                                               th:id="'priority-' + ${priority.name()}"
+                                               name="priority" 
+                                               th:value="${priority.name()}" 
+                                               th:checked="${priority.name() == 'MEDIUM'}"
+                                               class="hidden priority-input">
+                                        <label th:for="'priority-' + ${priority.name()}" 
+                                               class="priority-card flex items-center justify-center p-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 transition-colors duration-200"
+                                               th:classappend="${priority.name() == 'LOW'} ? 'hover:bg-green-50' : (${priority.name() == 'MEDIUM'} ? 'hover:bg-yellow-50' : (${priority.name() == 'HIGH'} ? 'hover:bg-orange-50' : 'hover:bg-red-50'))">
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-3 h-3 rounded-full"
+                                                     th:classappend="${priority.name() == 'LOW'} ? 'bg-green-500' : (${priority.name() == 'MEDIUM'} ? 'bg-yellow-500' : (${priority.name() == 'HIGH'} ? 'bg-orange-500' : 'bg-red-500'))">
+                                                </div>
+                                                <span class="text-sm font-medium text-gray-900" th:text="${priority.description}">优先级</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 工单类型选择 -->
+                            <div>
+                                <label class="form-label required block mb-2">工单类型</label>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                                    <div th:each="type : ${types}" class="type-option">
+                                        <input type="radio" 
+                                               th:id="'type-' + ${type.name()}"
+                                               name="type" 
+                                               th:value="${type.name()}" 
+                                               class="hidden type-input">
+                                        <label th:for="'type-' + ${type.name()}" 
+                                               class="type-card flex items-center justify-center p-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-all duration-200">
+                                            <div class="flex items-center space-x-2">
+                                                <i class="text-base text-gray-600"
+                                                   th:classappend="${type.name() == 'BUG'} ? 'fas fa-bug text-red-500' : (${type.name() == 'FEATURE'} ? 'fas fa-lightbulb text-blue-500' : (${type.name() == 'IMPROVEMENT'} ? 'fas fa-arrow-up text-green-500' : (${type.name() == 'QUESTION'} ? 'fas fa-question-circle text-purple-500' : 'fas fa-cog text-gray-500')))">
+                                                </i>
+                                                <span class="text-sm font-medium text-gray-900" th:text="${type.description}">类型</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 第二步：详细描述 -->
+                <div class="card" id="step-description">
+                    <div class="card-header" style="padding: 1rem 1.5rem 0.75rem;">
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-shrink-0">
+                                <div class="w-7 h-7 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-medium" id="step-2-indicator">
+                                    2
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-medium text-gray-900">详细描述</h3>
+                                <p class="text-xs text-gray-500">详细描述您遇到的问题或需求</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding: 1rem 1.5rem 1.5rem;">
                         <div>
-                            <div class="form-group">
-                                <label for="type" class="form-label required">工单类型</label>
-                                <select id="type" name="type" required class="form-select">
-                                    <option value="">请选择工单类型</option>
-                                    <option th:each="type : ${types}" 
-                                            th:value="${type.name()}" 
-                                            th:text="${type.description}">
-                                        类型
-                                    </option>
-                                </select>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                工单描述 <span class="text-red-500">*</span>
+                            </label>
+                            <div class="border border-gray-300 rounded-lg focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
+                                <div id="editor" class="min-h-[400px]"></div>
+                            </div>
+                            <div class="mt-2 flex items-center justify-between">
+                                <p class="text-xs text-gray-500">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    支持富文本编辑，可以直接粘贴或拖拽图片
+                                </p>
+                                <div class="flex space-x-3 text-xs text-gray-400">
+                                    <span><i class="fas fa-keyboard mr-1"></i>快捷键</span>
+                                    <span><i class="fas fa-image mr-1"></i>图片</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 第三步：附件上传 -->
+                <div class="card" id="step-attachments">
+                    <div class="card-header" style="padding: 1rem 1.5rem 0.75rem;">
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-shrink-0">
+                                <div class="w-7 h-7 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-medium" id="step-3-indicator">
+                                    3
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-medium text-gray-900">附件上传</h3>
+                                <p class="text-xs text-gray-500">上传相关文件或截图（可选）</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding: 1rem 1.5rem 1.5rem;">
+                        <div class="drag-drop-area" id="file-drop-area" style="padding: 1.5rem; border-style: dashed; border-width: 1px;">
+                            <div class="flex items-center justify-center">
+                                <div class="text-center">
+                                    <i class="fas fa-paperclip text-2xl text-gray-400 mb-2"></i>
+                                    <p class="text-sm text-gray-600">拖拽文件到这里或 
+                                        <button type="button" id="file-select-btn" class="text-blue-600 hover:text-blue-800 underline">选择文件</button>
+                                    </p>
+                                    <p class="text-xs text-gray-400 mt-1">支持图片、PDF、文档等格式</p>
+                                    <input type="file" id="file-input" multiple class="hidden" accept="*/*">
+                                </div>
                             </div>
                         </div>
                         
-
-                        
-
+                        <!-- 文件列表 -->
+                        <div id="file-list" class="mt-3 space-y-2"></div>
                     </div>
                 </div>
                 
-                <!-- 工单内容 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">工单描述 *</label>
-                    <div class="border border-gray-300 rounded-lg">
-                        <div id="editor" class="min-h-[300px]"></div>
-                    </div>
-                    <p class="mt-2 text-sm text-gray-500">支持富文本编辑，可以直接粘贴或拖拽图片</p>
-                </div>
-                
-                <!-- 文件附件 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">附件上传</label>
-                    <div class="drag-drop-area" id="file-drop-area">
-                        <div class="flex flex-col items-center">
-                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
-                            <p class="text-lg font-medium text-gray-700">拖拽文件到这里上传</p>
-                            <p class="text-sm text-gray-500 mt-2">或者 
-                                <button type="button" id="file-select-btn" class="text-blue-600 hover:text-blue-800 underline">点击选择文件</button>
-                            </p>
-                            <input type="file" id="file-input" multiple class="hidden" accept="*/*">
+                <!-- 提交区域 -->
+                <div class="card" id="step-submit">
+                    <div class="card-body" style="padding: 1rem 1.5rem;">
+                        <div class="flex items-center justify-between">
+                            <div class="flex space-x-3">
+                                <button type="button" onclick="history.back()" 
+                                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-150 ease-in-out text-sm">
+                                    <i class="fas fa-times mr-1"></i>取消
+                                </button>
+                                <button type="submit" id="submit-btn"
+                                        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed text-sm">
+                                    <i class="fas fa-paper-plane mr-1"></i>创建工单
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    
-                    <!-- 文件列表 -->
-                    <div id="file-list" class="mt-4 space-y-2"></div>
-                </div>
-                
-                <!-- 提交按钮 -->
-                <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-                    <button type="button" onclick="history.back()" 
-                            class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-150 ease-in-out">
-                        取消
-                    </button>
-                    <button type="submit" id="submit-btn"
-                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 ease-in-out">
-                        <i class="fas fa-save mr-2"></i>创建工单
-                    </button>
                 </div>
             </form>
         </div>
@@ -191,20 +260,39 @@
                 } else {
                     titleCount.removeClass('text-orange-500 text-red-500').addClass('text-gray-400');
                 }
+                
+
             });
             
-
+            // 优先级卡片选择
+            $('.priority-input').on('change', function() {
+                $('.priority-card').removeClass('border-blue-500 bg-blue-50');
+                if ($(this).is(':checked')) {
+                    $(this).next('.priority-card').addClass('border-blue-500 bg-blue-50');
+                }
+            });
+            
+            // 类型卡片选择
+            $('.type-input').on('change', function() {
+                $('.type-card').removeClass('border-blue-500 bg-blue-50');
+                if ($(this).is(':checked')) {
+                    $(this).next('.type-card').addClass('border-blue-500 bg-blue-50');
+                }
+            });
             
             // 输入时移除错误样式
-            $('.form-input, .form-select').on('input change', function() {
+            $('.form-input, .priority-input, .type-input').on('input change', function() {
                 $(this).removeClass('border-red-500');
+                $(this).next('.priority-card, .type-card').removeClass('border-red-500');
             });
             
             // 编辑器获得焦点时移除错误样式
             $('#editor').on('click', function() {
-                $(this).removeClass('border-red-500');
+                $(this).parent().removeClass('border-red-500');
             });
         }
+        
+
         
         // 初始化编辑器
         function initEditor() {
@@ -395,40 +483,49 @@
                 // 验证必填字段
                 const title = $('#title').val().trim();
                 const workspaceId = $('#workspaceId').val();
-                const priority = $('#priority').val();
-                const type = $('#type').val();
+                const priority = $('input[name="priority"]:checked').val();
+                const type = $('input[name="type"]:checked').val();
                 
                 // 移除之前的错误样式
-                $('.form-input, .form-select').removeClass('border-red-500');
+                $('.form-input').removeClass('border-red-500');
+                $('.priority-card, .type-card').removeClass('border-red-500');
+                $('#editor').parent().removeClass('border-red-500');
+                
+                let hasError = false;
+                let firstErrorElement = null;
                 
                 if (!title) {
-                    $('#title').addClass('border-red-500').focus();
+                    $('#title').addClass('border-red-500');
                     AppUtils.showError('请输入工单标题');
-                    return;
+                    firstErrorElement = $('#title');
+                    hasError = true;
                 }
                 
-                if (title.length < 5) {
-                    $('#title').addClass('border-red-500').focus();
+                if (title && title.length < 5) {
+                    $('#title').addClass('border-red-500');
                     AppUtils.showError('工单标题至少需要5个字符');
-                    return;
+                    firstErrorElement = firstErrorElement || $('#title');
+                    hasError = true;
                 }
                 
                 // 工作空间现在是隐藏字段，检查是否有值
                 if (!workspaceId) {
                     AppUtils.showError('系统错误：未找到有效的工作空间');
-                    return;
+                    hasError = true;
                 }
                 
                 if (!priority) {
-                    $('#priority').addClass('border-red-500').focus();
+                    $('.priority-card').addClass('border-red-500');
                     AppUtils.showError('请选择优先级');
-                    return;
+                    firstErrorElement = firstErrorElement || $('#step-basic');
+                    hasError = true;
                 }
                 
                 if (!type) {
-                    $('#type').addClass('border-red-500').focus();
+                    $('.type-card').addClass('border-red-500');
                     AppUtils.showError('请选择工单类型');
-                    return;
+                    firstErrorElement = firstErrorElement || $('#step-basic');
+                    hasError = true;
                 }
                 
                 // 检查编辑器内容
@@ -438,8 +535,24 @@
                          (block.data.items && block.data.items.length > 0)));
                 
                 if (!hasContent) {
-                    $('#editor').addClass('border-red-500');
+                    $('#editor').parent().addClass('border-red-500');
                     AppUtils.showError('请输入工单描述内容');
+                    firstErrorElement = firstErrorElement || $('#step-description');
+                    hasError = true;
+                }
+                
+                if (hasError) {
+                    // 滚动到第一个错误元素
+                    if (firstErrorElement) {
+                        $('html, body').animate({
+                            scrollTop: firstErrorElement.offset().top - 100
+                        }, 500);
+                        
+                        // 如果是输入框，则聚焦
+                        if (firstErrorElement.is('input')) {
+                            firstErrorElement.focus();
+                        }
+                    }
                     return;
                 }
                 
@@ -453,7 +566,7 @@
             } catch (error) {
                 console.error('保存失败:', error);
                 AppUtils.showError('保存编辑器内容失败');
-                $('#submit-btn').prop('disabled', false).html('<i class="fas fa-save mr-2"></i>创建工单');
+                $('#submit-btn').prop('disabled', false).html('<i class="fas fa-paper-plane mr-2"></i>创建工单');
             }
         }
     </script>
