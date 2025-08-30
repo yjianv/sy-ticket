@@ -57,24 +57,9 @@ public class TicketController {
                       @RequestParam(value = "keyword", required = false) String keyword,
                       Model model) {
         
-        // 获取工作空间列表
-        List<Workspace> workspaces = workspaceService.getAllEnabled();
-        model.addAttribute("workspaces", workspaces);
-        
-        // 获取当前用户的默认工作空间偏好
-        Long userDefaultWorkspaceId = null;
-        Long userId = SecurityUtils.getCurrentUserId();
-        if (userId != null) {
-            User currentUser = userService.findById(userId);
-            if (currentUser != null) {
-                userDefaultWorkspaceId = currentUser.getDefaultWorkspaceId();
-            }
-        }
-        
-        // 确定当前工作空间（优先级：URL参数 > 用户偏好 > 第一个可用的工作空间）
-        Workspace currentWorkspace = workspaceService.getCurrentWorkspace(workspaceId, userDefaultWorkspaceId, workspaces);
+        // 获取当前工作空间（由WorkspaceControllerAdvice统一处理）
+        Workspace currentWorkspace = (Workspace) model.getAttribute("currentWorkspace");
         workspaceId = currentWorkspace != null ? currentWorkspace.getId() : null;
-        model.addAttribute("currentWorkspace", currentWorkspace);
         
         // 分页查询工单
         PageInfo<Ticket> pageInfo = ticketService.getTicketPage(page, size, workspaceId, status, priority, type, keyword);
@@ -107,24 +92,13 @@ public class TicketController {
         
         model.addAttribute("ticket", ticket);
         
-        // 获取工作空间列表（用于左侧菜单显示）
-        List<Workspace> workspaces = workspaceService.getAllEnabled();
-        model.addAttribute("workspaces", workspaces);
-        
-        // 获取当前用户的默认工作空间偏好
-        Long userDefaultWorkspaceId = null;
-        Long userId = SecurityUtils.getCurrentUserId();
-        if (userId != null) {
-            User currentUser = userService.findById(userId);
-            if (currentUser != null) {
-                userDefaultWorkspaceId = currentUser.getDefaultWorkspaceId();
-            }
-        }
-        
-        // 确定当前工作空间（优先使用工单关联的工作空间）
+        // 获取当前工作空间（由WorkspaceControllerAdvice统一处理，但工单详情页优先使用工单关联的工作空间）
         Long workspaceId = ticket.getWorkspaceId();
-        Workspace currentWorkspace = workspaceService.getCurrentWorkspace(workspaceId, userDefaultWorkspaceId, workspaces);
-        model.addAttribute("currentWorkspace", currentWorkspace);
+        Workspace ticketWorkspace = workspaceService.getById(workspaceId);
+        if (ticketWorkspace != null && ticketWorkspace.getEnabled()) {
+            model.addAttribute("currentWorkspace", ticketWorkspace);
+        }
+        // 如果工单关联的工作空间无效，则使用WorkspaceControllerAdvice设置的默认工作空间
         
         // 获取评论列表
         List<TicketComment> comments = commentService.getCommentsByTicketId(id);
@@ -151,23 +125,8 @@ public class TicketController {
      */
     @GetMapping("/create")
     public String create(@RequestParam(value = "workspaceId", required = false) Long workspaceId, Model model) {
-        // 获取工作空间列表
-        List<Workspace> workspaces = workspaceService.getAllEnabled();
-        model.addAttribute("workspaces", workspaces);
-        
-        // 获取当前用户的默认工作空间偏好
-        Long userDefaultWorkspaceId = null;
-        Long userId = SecurityUtils.getCurrentUserId();
-        if (userId != null) {
-            User currentUser = userService.findById(userId);
-            if (currentUser != null) {
-                userDefaultWorkspaceId = currentUser.getDefaultWorkspaceId();
-            }
-        }
-        
-        // 确定当前工作空间（优先级：URL参数 > 用户偏好 > 第一个可用的工作空间）
-        Workspace currentWorkspace = workspaceService.getCurrentWorkspace(workspaceId, userDefaultWorkspaceId, workspaces);
-        model.addAttribute("currentWorkspace", currentWorkspace);
+        // 获取当前工作空间（由WorkspaceControllerAdvice统一处理）
+        Workspace currentWorkspace = (Workspace) model.getAttribute("currentWorkspace");
         
         // 枚举值
         model.addAttribute("priorities", Ticket.Priority.values());
@@ -229,24 +188,13 @@ public class TicketController {
         
         model.addAttribute("ticket", ticket);
         
-        // 获取工作空间列表（用于左侧菜单显示和编辑选择）
-        List<Workspace> workspaces = workspaceService.getAllEnabled();
-        model.addAttribute("workspaces", workspaces);
-        
-        // 获取当前用户的默认工作空间偏好
-        Long userDefaultWorkspaceId = null;
-        Long userId = SecurityUtils.getCurrentUserId();
-        if (userId != null) {
-            User currentUser = userService.findById(userId);
-            if (currentUser != null) {
-                userDefaultWorkspaceId = currentUser.getDefaultWorkspaceId();
-            }
-        }
-        
-        // 确定当前工作空间（优先使用工单关联的工作空间）
+        // 获取当前工作空间（由WorkspaceControllerAdvice统一处理，但编辑页优先使用工单关联的工作空间）
         Long workspaceId = ticket.getWorkspaceId();
-        Workspace currentWorkspace = workspaceService.getCurrentWorkspace(workspaceId, userDefaultWorkspaceId, workspaces);
-        model.addAttribute("currentWorkspace", currentWorkspace);
+        Workspace ticketWorkspace = workspaceService.getById(workspaceId);
+        if (ticketWorkspace != null && ticketWorkspace.getEnabled()) {
+            model.addAttribute("currentWorkspace", ticketWorkspace);
+        }
+        // 如果工单关联的工作空间无效，则使用WorkspaceControllerAdvice设置的默认工作空间
         
         // 获取用户列表
         List<User> users = userService.getAllEnabled();
