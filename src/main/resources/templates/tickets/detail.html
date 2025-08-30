@@ -95,6 +95,15 @@
                                         </div>
                                     </div>
                                     <div class="flex-shrink-0 ml-3">
+                                        <!-- 图片预览按钮 -->
+                                        <button th:if="${attachment.mimeType.startsWith('image/')}"
+                                                onclick="previewImage(this)"
+                                                th:data-image-url="'/api/files/' + ${attachment.id} + '/preview'"
+                                                th:data-image-name="${attachment.originalName}"
+                                                class="text-green-600 hover:text-green-800 p-2 rounded-full hover:bg-green-100 transition-colors duration-200 mr-1"
+                                                title="预览图片">
+                                            <i class="fas fa-eye text-sm"></i>
+                                        </button>
                                         <a th:href="@{/api/files/{id}/download(id=${attachment.id})}" 
                                            target="_blank" 
                                            class="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100 transition-colors duration-200"
@@ -351,6 +360,34 @@
                 </div>
             </div>
         </div>
+        
+        <!-- 图片预览模态框 -->
+        <div id="image-preview-modal" class="fixed inset-0 bg-black bg-opacity-75 overflow-auto h-full w-full hidden z-50">
+            <div class="flex items-center justify-center min-h-full p-4">
+                <div class="relative max-w-7xl max-h-full bg-white rounded-lg shadow-xl">
+                    <!-- 关闭按钮 -->
+                    <button onclick="closeImagePreview()" 
+                            class="absolute top-4 right-4 z-10 bg-black bg-opacity-50 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-opacity-75 transition-all duration-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    
+                    <!-- 图片容器 -->
+                    <div class="relative image-preview-container">
+                        <img id="preview-image" 
+                             src="" 
+                             alt="" 
+                             class="max-w-full max-h-[90vh] object-contain rounded-lg"
+                             style="min-width: 200px;"
+                             onclick="toggleImageZoom()">
+                        
+                        <!-- 图片信息 -->
+                        <div class="absolute bottom-0 left-0 right-0 image-preview-info text-white p-4 rounded-b-lg">
+                            <p id="preview-image-name" class="text-lg font-medium truncate"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 
@@ -528,6 +565,63 @@
                     AppUtils.showError('工单移交失败');
                 }
             });
+        }
+        
+        // 预览图片
+        function previewImage(button) {
+            const imageUrl = button.getAttribute('data-image-url');
+            const imageName = button.getAttribute('data-image-name');
+            
+            if (!imageUrl) {
+                AppUtils.showError('无法获取图片预览地址');
+                return;
+            }
+            
+            // 设置预览图片
+            const previewImg = document.getElementById('preview-image');
+            const previewName = document.getElementById('preview-image-name');
+            
+            previewImg.src = imageUrl;
+            previewImg.alt = imageName;
+            previewName.textContent = imageName;
+            
+            // 显示模态框
+            document.getElementById('image-preview-modal').classList.remove('hidden');
+            
+            // 防止页面滚动
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // 关闭图片预览
+        function closeImagePreview() {
+            document.getElementById('image-preview-modal').classList.add('hidden');
+            
+            // 恢复页面滚动
+            document.body.style.overflow = 'auto';
+            
+            // 清空图片源，释放内存
+            const previewImg = document.getElementById('preview-image');
+            previewImg.src = '';
+        }
+        
+        // 点击模态框背景关闭预览
+        document.getElementById('image-preview-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeImagePreview();
+            }
+        });
+        
+        // ESC键关闭预览
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !document.getElementById('image-preview-modal').classList.contains('hidden')) {
+                closeImagePreview();
+            }
+        });
+        
+        // 切换图片缩放
+        function toggleImageZoom() {
+            const previewImg = document.getElementById('preview-image');
+            previewImg.classList.toggle('zoomed');
         }
     </script>
 </th:block>

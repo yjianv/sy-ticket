@@ -187,6 +187,37 @@ public class FileController {
     }
     
     /**
+     * 预览文件（主要用于图片预览）
+     * 
+     * @param fileId 文件ID
+     * @return 文件内容（用于在线预览）
+     */
+    @GetMapping("/{fileId}/preview")
+    public ResponseEntity<InputStreamResource> previewFile(@PathVariable Long fileId) {
+        try {
+            FileEntity fileEntity = fileService.getFileById(fileId);
+            if (fileEntity == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            InputStream inputStream = fileService.downloadFile(fileId);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(fileEntity.getMimeType()));
+            // 设置为inline，浏览器会尝试直接显示而不是下载
+            headers.setContentDispositionFormData("inline", 
+                URLEncoder.encode(fileEntity.getOriginalName(), StandardCharsets.UTF_8));
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(new InputStreamResource(inputStream));
+                    
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
      * 删除文件
      * 
      * @param fileId 文件ID
