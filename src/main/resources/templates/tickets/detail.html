@@ -59,6 +59,11 @@
             border: 2px solid white;
             box-shadow: 0 0 0 2px #e5e7eb;
         }
+        
+        /* 移交工单弹窗的z-index设置，确保在EditJS编辑器之上 */
+        #transfer-modal {
+            z-index: 9999 !important;
+        }
     </style>
 </th:block>
 
@@ -243,7 +248,7 @@
                         <div>
                             <label for="assign-user" class="block text-sm font-medium text-gray-700 mb-2">指派给</label>
                             <div class="flex space-x-2">
-                                <select id="assign-user" class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                <select id="assign-user" disabled class="flex-grow px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed">
                                     <option value="">选择用户</option>
                                     <option th:each="user : ${users}" 
                                             th:value="${user.id}" 
@@ -252,7 +257,7 @@
                                         用户
                                     </option>
                                 </select>
-                                <button type="button" onclick="assignTicket()" class="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700">
+                                <button type="button" disabled class="bg-gray-400 text-white px-3 py-2 rounded-lg cursor-not-allowed" title="指派功能已禁用">
                                     指派
                                 </button>
                             </div>
