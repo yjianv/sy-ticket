@@ -25,9 +25,18 @@ spring:
   thymeleaf:
     mode: HTML
     encoding: UTF-8
-    cache: false
+    cache: false  # 开启热加载，生产环境应设为true
     prefix: classpath:/templates/
     suffix: .html
+    servlet:
+      content-type: text/html
+    
+  # DevTools配置 - 热加载配置
+  devtools:
+    restart:
+      enabled: true  # 启用自动重启
+      additional-paths: src/main/resources/templates,src/main/resources/static  # 监控路径
+      exclude: static/**,public/**  # 排除不需要重启的路径
     
   # 文件上传配置
   servlet:
@@ -41,7 +50,7 @@ mybatis:
   type-aliases-package: com.syticket.entity
   configuration:
     map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
 
 # 分页配置
 pagehelper:
