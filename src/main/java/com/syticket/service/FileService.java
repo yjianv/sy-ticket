@@ -214,6 +214,36 @@ public class FileService {
     }
     
     /**
+     * 更新文件关联信息
+     * 
+     * @param fileId 文件ID
+     * @param relatedId 关联ID
+     */
+    @Transactional
+    public void updateFileRelation(Long fileId, Long relatedId) {
+        FileEntity fileEntity = fileMapper.findById(fileId);
+        if (fileEntity != null) {
+            fileEntity.setRelatedId(relatedId);
+            fileMapper.update(fileEntity);
+        }
+    }
+    
+    /**
+     * 批量更新文件关联信息
+     * 
+     * @param fileIds 文件ID列表
+     * @param relatedId 关联ID
+     */
+    @Transactional
+    public void updateFilesRelation(List<Long> fileIds, Long relatedId) {
+        if (fileIds != null && !fileIds.isEmpty()) {
+            for (Long fileId : fileIds) {
+                updateFileRelation(fileId, relatedId);
+            }
+        }
+    }
+    
+    /**
      * 生成存储文件名
      * 
      * @param originalName 原始文件名

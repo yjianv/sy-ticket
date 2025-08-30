@@ -53,6 +53,61 @@
                     </div>
                 </div>
                 
+                <!-- 附件区域 -->
+                <div class="card" th:if="${attachments != null and !attachments.isEmpty()}">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-paperclip mr-2"></i>附件 
+                            <span class="text-sm text-gray-500" th:text="'(' + ${attachments.size()} + '个)'"></span>
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div th:each="attachment : ${attachments}" class="attachment-item">
+                                <div class="flex items-center p-3 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-200">
+                                    <div class="flex-shrink-0 mr-3">
+                                        <!-- 根据文件类型显示不同图标 -->
+                                        <i class="fas fa-file-alt text-gray-500 text-lg"
+                                           th:if="${attachment.mimeType.startsWith('text/')}"
+                                           th:classappend="'text-blue-500'"></i>
+                                        <i class="fas fa-file-image text-green-500 text-lg" 
+                                           th:if="${attachment.mimeType.startsWith('image/')}"></i>
+                                        <i class="fas fa-file-pdf text-red-500 text-lg" 
+                                           th:if="${attachment.mimeType == 'application/pdf'}"></i>
+                                        <i class="fas fa-file-word text-blue-600 text-lg" 
+                                           th:if="${attachment.mimeType.contains('document') or attachment.mimeType.contains('word')}"></i>
+                                        <i class="fas fa-file-excel text-green-600 text-lg" 
+                                           th:if="${attachment.mimeType.contains('spreadsheet') or attachment.mimeType.contains('excel')}"></i>
+                                        <i class="fas fa-file-archive text-yellow-600 text-lg" 
+                                           th:if="${attachment.mimeType.contains('zip') or attachment.mimeType.contains('rar')}"></i>
+                                        <i class="fas fa-file text-gray-500 text-lg" 
+                                           th:if="${!attachment.mimeType.startsWith('image/') and !attachment.mimeType.startsWith('text/') and attachment.mimeType != 'application/pdf' and !attachment.mimeType.contains('document') and !attachment.mimeType.contains('word') and !attachment.mimeType.contains('spreadsheet') and !attachment.mimeType.contains('excel') and !attachment.mimeType.contains('zip') and !attachment.mimeType.contains('rar')}"></i>
+                                    </div>
+                                    <div class="flex-grow min-w-0">
+                                        <div class="text-sm font-medium text-gray-900 truncate" th:text="${attachment.originalName}">文件名</div>
+                                        <div class="text-xs text-gray-500 mt-1">
+                                            <span th:text="${#numbers.formatInteger(attachment.fileSize / 1024, 0)} + ' KB'">文件大小</span>
+                                            <span class="mx-1">•</span>
+                                            <span th:text="${#temporals.format(attachment.createdAt, 'yyyy-MM-dd HH:mm')}">上传时间</span>
+                                        </div>
+                                        <div class="text-xs text-gray-400 mt-1" th:if="${attachment.uploader != null}">
+                                            <span>上传者：</span><span th:text="${attachment.uploader.realName}">上传者</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 ml-3">
+                                        <a th:href="@{/api/files/{id}/download(id=${attachment.id})}" 
+                                           target="_blank" 
+                                           class="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100 transition-colors duration-200"
+                                           title="下载附件">
+                                            <i class="fas fa-download text-sm"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- 评论区域 -->
                 <div class="card">
                     <div class="card-header">

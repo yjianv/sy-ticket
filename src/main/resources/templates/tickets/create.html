@@ -30,6 +30,7 @@
         <div class="space-y-5">
             <form id="ticket-form" action="/tickets/create" method="POST">
                 <input type="hidden" id="content-input" name="content" value=""/>
+                <input type="hidden" id="attachment-ids" name="attachmentIds" value=""/>
                 <!-- 使用默认工作空间或第一个可用工作空间 -->
                 <input type="hidden" id="workspaceId" name="workspaceId" 
                        th:value="${defaultWorkspaceId != null ? defaultWorkspaceId : (workspaces != null and !workspaces.empty ? workspaces[0].id : '')}"/>
@@ -433,14 +434,18 @@
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
-        
+
         // 提交表单
         async function submitForm() {
             try {
                 // 获取编辑器内容
                 const editorData = await editor.save();
                 $('#content-input').val(JSON.stringify(editorData));
-                
+
+                // 设置附件ID列表
+                const attachmentIds = uploadedFiles.map(file => file.id).join(',');
+                $('#attachment-ids').val(attachmentIds);
+
                 // 验证必填字段
                 const title = $('#title').val().trim();
                 const workspaceId = $('#workspaceId').val();

@@ -1,13 +1,8 @@
 package com.syticket.controller;
 
-import com.syticket.entity.Ticket;
-import com.syticket.entity.TicketComment;
-import com.syticket.entity.TicketFlow;
-import com.syticket.entity.User;
-import com.syticket.entity.Workspace;
-import com.syticket.service.*;
-import com.syticket.util.SecurityUtils;
 import com.github.pagehelper.PageInfo;
+import com.syticket.entity.*;
+import com.syticket.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +12,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 工单页面控制器
@@ -43,6 +40,9 @@ public class TicketController {
     
     @Autowired
     private TicketFlowService flowService;
+    
+    @Autowired
+    private FileService fileService;
     
     /**
      * 工单列表页面
@@ -112,6 +112,10 @@ public class TicketController {
         List<User> users = userService.getAllEnabled();
         model.addAttribute("users", users);
         
+        // 获取工单附件
+        List<FileEntity> attachments = fileService.getFilesByRelated(FileEntity.RelatedType.TICKET, id);
+        model.addAttribute("attachments", attachments);
+        
         // 枚举值
         model.addAttribute("priorities", Ticket.Priority.values());
         model.addAttribute("statuses", Ticket.Status.values());
@@ -152,6 +156,7 @@ public class TicketController {
                               @RequestParam String type,
                               @RequestParam Long workspaceId,
                               @RequestParam(required = false) String estimatedHours,
+                              @RequestParam(required = false) String attachmentIds,
                               RedirectAttributes redirectAttributes) {
         
         try {
@@ -167,6 +172,19 @@ public class TicketController {
             }
             
             Ticket createdTicket = ticketService.create(ticket);
+            
+            // 处理附件关联
+            if (attachmentIds != null && !attachmentIds.trim().isEmpty()) {
+                List<Long> fileIds = Arrays.stream(attachmentIds.split(","))
+                    .filter(id -> !id.trim().isEmpty())
+                    .map(id -> Long.parseLong(id.trim()))
+                    .collect(Collectors.toList());
+                
+                if (!fileIds.isEmpty()) {
+                    fileService.updateFilesRelation(fileIds, createdTicket.getId());
+                }
+            }
+            
             redirectAttributes.addFlashAttribute("message", "工单创建成功");
             return "redirect:/tickets/" + createdTicket.getId();
             
