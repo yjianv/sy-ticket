@@ -107,6 +107,25 @@ public class TicketController {
         
         model.addAttribute("ticket", ticket);
         
+        // 获取工作空间列表（用于左侧菜单显示）
+        List<Workspace> workspaces = workspaceService.getAllEnabled();
+        model.addAttribute("workspaces", workspaces);
+        
+        // 获取当前用户的默认工作空间偏好
+        Long userDefaultWorkspaceId = null;
+        Long userId = SecurityUtils.getCurrentUserId();
+        if (userId != null) {
+            User currentUser = userService.findById(userId);
+            if (currentUser != null) {
+                userDefaultWorkspaceId = currentUser.getDefaultWorkspaceId();
+            }
+        }
+        
+        // 确定当前工作空间（优先使用工单关联的工作空间）
+        Long workspaceId = ticket.getWorkspaceId();
+        Workspace currentWorkspace = workspaceService.getCurrentWorkspace(workspaceId, userDefaultWorkspaceId, workspaces);
+        model.addAttribute("currentWorkspace", currentWorkspace);
+        
         // 获取评论列表
         List<TicketComment> comments = commentService.getCommentsByTicketId(id);
         model.addAttribute("comments", comments);
@@ -210,9 +229,24 @@ public class TicketController {
         
         model.addAttribute("ticket", ticket);
         
-        // 获取工作空间列表
+        // 获取工作空间列表（用于左侧菜单显示和编辑选择）
         List<Workspace> workspaces = workspaceService.getAllEnabled();
         model.addAttribute("workspaces", workspaces);
+        
+        // 获取当前用户的默认工作空间偏好
+        Long userDefaultWorkspaceId = null;
+        Long userId = SecurityUtils.getCurrentUserId();
+        if (userId != null) {
+            User currentUser = userService.findById(userId);
+            if (currentUser != null) {
+                userDefaultWorkspaceId = currentUser.getDefaultWorkspaceId();
+            }
+        }
+        
+        // 确定当前工作空间（优先使用工单关联的工作空间）
+        Long workspaceId = ticket.getWorkspaceId();
+        Workspace currentWorkspace = workspaceService.getCurrentWorkspace(workspaceId, userDefaultWorkspaceId, workspaces);
+        model.addAttribute("currentWorkspace", currentWorkspace);
         
         // 获取用户列表
         List<User> users = userService.getAllEnabled();
