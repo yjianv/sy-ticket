@@ -22,7 +22,6 @@ public interface UserMapper {
      * @param username 用户名
      * @return 用户信息
      */
-    @Select("SELECT * FROM users WHERE username = #{username} AND enabled = true")
     User findByUsername(@Param("username") String username);
     
     /**
@@ -31,7 +30,6 @@ public interface UserMapper {
      * @param id 用户ID
      * @return 用户信息
      */
-    @Select("SELECT * FROM users WHERE id = #{id}")
     User findById(@Param("id") Long id);
     
     /**
@@ -39,7 +37,6 @@ public interface UserMapper {
      * 
      * @return 用户列表
      */
-    @Select("SELECT * FROM users WHERE enabled = true ORDER BY created_at DESC")
     List<User> findAllEnabled();
     
     /**
@@ -64,6 +61,5 @@ public interface UserMapper {
      * @param email 邮箱
      * @return 用户信息
      */
-    @Select("SELECT * FROM users WHERE email = #{email} AND enabled = true")
     User findByEmail(@Param("email") String email);
 }

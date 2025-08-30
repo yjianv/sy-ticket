@@ -16,6 +16,26 @@
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
+    <!-- 根据用户名查找用户 -->
+    <select id="findByUsername" resultMap="UserResultMap">
+        SELECT * FROM users WHERE username = #{username} AND enabled = true
+    </select>
+
+    <!-- 根据ID查找用户 -->
+    <select id="findById" resultMap="UserResultMap">
+        SELECT * FROM users WHERE id = #{id}
+    </select>
+
+    <!-- 查询所有启用的用户 -->
+    <select id="findAllEnabled" resultMap="UserResultMap">
+        SELECT * FROM users WHERE enabled = true ORDER BY created_at DESC
+    </select>
+
+    <!-- 根据邮箱查找用户 -->
+    <select id="findByEmail" resultMap="UserResultMap">
+        SELECT * FROM users WHERE email = #{email} AND enabled = true
+    </select>
+
     <!-- 插入用户 -->
     <insert id="insert" parameterType="com.syticket.entity.User" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO users (username, password, email, real_name, avatar, phone, enabled)
