@@ -75,7 +75,9 @@ public class HomeController {
             
             // 用户相关的工单
             Long userId = SecurityUtils.getCurrentUserId();
-            model.addAttribute("userTickets", ticketService.getUserRelatedTickets(userId, currentWorkspace.getId()));
+            if (userId != null) {
+                model.addAttribute("userTickets", ticketService.getUserRelatedTickets(userId, currentWorkspace.getId()));
+            }
         }
         
         return "index";

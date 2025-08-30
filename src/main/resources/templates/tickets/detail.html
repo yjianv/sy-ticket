@@ -364,7 +364,6 @@
     
     <script th:inline="javascript">
         let ticketId = /*[[${ticket.id}]]*/ null;
-        let csrfToken = /*[[${_csrf.token}]]*/ '';
         
         $(document).ready(function() {
             // 初始化只读编辑器
@@ -417,9 +416,7 @@
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ content: content }),
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken
-                },
+
                 success: function(response) {
                     if (response.success) {
                         AppUtils.showSuccess('评论发表成功');
@@ -447,9 +444,7 @@
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ assigneeId: userId }),
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken
-                },
+
                 success: function(response) {
                     if (response.success) {
                         AppUtils.showSuccess('工单指派成功');
@@ -473,9 +468,7 @@
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ status: newStatus, reason: reason }),
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken
-                },
+
                 success: function(response) {
                     if (response.success) {
                         AppUtils.showSuccess('状态更新成功');
@@ -517,9 +510,7 @@
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ toUserId: userId, reason: reason }),
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken
-                },
+
                 success: function(response) {
                     if (response.success) {
                         AppUtils.showSuccess('工单移交成功');

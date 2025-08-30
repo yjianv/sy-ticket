@@ -46,6 +46,14 @@
         .type-question { @apply bg-purple-100 text-purple-800; }
         .type-other { @apply bg-gray-100 text-gray-800; }
         
+        /* 导航链接活跃状态 */
+        .sidebar-link.active {
+            @apply bg-blue-50 text-blue-700 border-r-2 border-blue-500;
+        }
+        .sidebar-link.active i {
+            @apply text-blue-500;
+        }
+        
         .editor-container {
             min-height: 300px;
             border: 1px solid #e5e7eb;
@@ -77,15 +85,15 @@
                     <div class="flex items-center ml-3 relative">
                         <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300" id="user-menu-button">
                             <span class="sr-only">Open user menu</span>
-                            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium" th:text="${#authentication.principal.realName != null ? #authentication.principal.realName.substring(0,1) : #authentication.principal.username.substring(0,1)}">
+                            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium" th:text="${#authentication != null and #authentication.principal != null ? (#authentication.principal.realName != null ? #authentication.principal.realName.substring(0,1) : #authentication.principal.username.substring(0,1)) : 'U'}">
                                 U
                             </div>
                         </button>
                         
                         <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow" id="user-dropdown">
                             <div class="px-4 py-3">
-                                <p class="text-sm text-gray-900" th:text="${#authentication.principal.realName}">用户名</p>
-                                <p class="text-sm font-medium text-gray-900 truncate" th:text="${#authentication.principal.email}">用户邮箱</p>
+                                <p class="text-sm text-gray-900" th:text="${#authentication != null and #authentication.principal != null ? #authentication.principal.realName : '未知用户'}">用户名</p>
+                                <p class="text-sm font-medium text-gray-900 truncate" th:text="${#authentication != null and #authentication.principal != null ? #authentication.principal.email : '未知邮箱'}">用户邮箱</p>
                             </div>
                             <ul class="py-1">
                                 <li>
@@ -124,13 +132,13 @@
             
             <ul class="space-y-2 font-medium">
                 <li>
-                    <a href="/" class="sidebar-link flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group" th:classappend="${#httpServletRequest.requestURI == '/' ? 'active' : ''}">
+                    <a href="/" class="sidebar-link flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group" data-path="/">
                         <i class="fas fa-tachometer-alt flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900"></i>
                         <span class="ml-3">仪表盘</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/tickets" class="sidebar-link flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group" th:classappend="${#strings.startsWith(#httpServletRequest.requestURI, '/tickets') ? 'active' : ''}">
+                    <a href="/tickets" class="sidebar-link flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group" data-path="/tickets">
                         <i class="fas fa-ticket-alt flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900"></i>
                         <span class="ml-3">工单管理</span>
                     </a>
@@ -189,14 +197,7 @@
                 window.location.href = currentUrl.toString();
             });
             
-            // 全局CSRF令牌设置
-            const token = $("meta[name='_csrf']").attr("content");
-            const header = $("meta[name='_csrf_header']").attr("content");
-            if (token && header) {
-                $(document).ajaxSend(function(e, xhr, options) {
-                    xhr.setRequestHeader(header, token);
-                });
-            }
+
         });
         
         // 全局工具函数
@@ -266,6 +267,25 @@
                 return date.toLocaleDateString('zh-CN');
             }
         };
+        
+        // 设置导航菜单活跃状态
+        function setActiveNavigation() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.sidebar-link[data-path]');
+            
+            navLinks.forEach(link => {
+                const linkPath = link.getAttribute('data-path');
+                link.classList.remove('active');
+                
+                if (currentPath === linkPath || 
+                    (linkPath !== '/' && currentPath.startsWith(linkPath))) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // 页面加载时设置活跃状态
+        document.addEventListener('DOMContentLoaded', setActiveNavigation);
     </script>
     
     <th:block layout:fragment="custom-script">

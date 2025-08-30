@@ -61,7 +61,6 @@
         <!-- 表单 -->
         <div class="bg-white shadow rounded-lg">
             <form id="ticket-form" action="/tickets/create" method="POST" class="p-6 space-y-6">
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <input type="hidden" id="content-input" name="content" value=""/>
                 
                 <!-- 基本信息 -->
@@ -267,10 +266,7 @@
                                 byFile: '/api/files/upload/image',
                             },
                             field: 'image',
-                            types: 'image/*',
-                            additionalRequestHeaders: {
-                                'X-CSRF-TOKEN': $('input[name="_csrf"]').val()
-                            }
+                            types: 'image/*'
                         }
                     }
                 },
@@ -334,7 +330,6 @@
             const formData = new FormData();
             formData.append('file', file);
             formData.append('relatedType', 'TICKET');
-            formData.append('_csrf', $('input[name="_csrf"]').val());
             
             const fileItem = createFileItem(file);
             $('#file-list').append(fileItem);
