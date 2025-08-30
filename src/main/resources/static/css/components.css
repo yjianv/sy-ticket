@@ -861,10 +861,11 @@
   cursor: pointer;
   transition: all var(--transition-fast);
   background-color: var(--color-surface);
-  min-height: 2.25rem;
+  min-height: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 1;
 }
 
 .priority-card:hover {
@@ -890,10 +891,11 @@
   cursor: pointer;
   transition: all var(--transition-fast);
   background-color: var(--color-surface);
-  min-height: 2.25rem;
+  min-height: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 1;
 }
 
 .type-card:hover {

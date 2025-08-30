@@ -105,15 +105,17 @@
         <!-- 我的工单 -->
         <div class="card" style="margin-bottom: var(--space-8);" th:if="${userTickets != null and !userTickets.isEmpty()}">
             <div class="card-header">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div style="flex: 1;">
                         <h3 class="card-title">我相关的工单</h3>
                         <p style="margin-top: var(--space-1); font-size: var(--text-sm); color: var(--color-text-secondary);">最近的10条工单（包括我创建的和指派给我的）</p>
                     </div>
-                    <a href="/tickets" class="btn btn-outline" style="font-size: var(--text-sm);">
-                        <i class="fas fa-list" style="margin-right: var(--space-2);"></i>
-                        查看全部
-                    </a>
+                    <div style="flex-shrink: 0; margin-left: var(--space-4);">
+                        <a href="/tickets" class="btn btn-outline" style="font-size: var(--text-sm); white-space: nowrap;">
+                            <i class="fas fa-list" style="margin-right: var(--space-2);"></i>
+                            查看全部
+                        </a>
+                    </div>
                 </div>
             </div>
             <div style="overflow: hidden;">
@@ -159,17 +161,6 @@
 
                 <div class="card-footer" style="background-color: var(--color-gray-50); border-top: 1px solid var(--color-border-secondary);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div style="display: flex; gap: var(--space-4); font-size: var(--text-sm); color: var(--color-text-secondary);">
-                            <a href="/tickets?status=OPEN" style="color: var(--color-primary-600); text-decoration: none;">
-                                待处理工单
-                            </a>
-                            <a href="/tickets?status=IN_PROGRESS" style="color: var(--color-warning-600); text-decoration: none;">
-                                处理中工单
-                            </a>
-                            <a href="/tickets?status=RESOLVED" style="color: var(--color-success-600); text-decoration: none;">
-                                已解决工单
-                            </a>
-                        </div>
                         <a href="/tickets" style="font-size: var(--text-sm); color: var(--color-primary-600); text-decoration: none; font-weight: var(--font-medium);">
                             查看所有工单 →
                         </a>
