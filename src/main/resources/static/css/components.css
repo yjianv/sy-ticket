@@ -875,7 +875,7 @@
 .priority-input:checked + .priority-card {
   border-color: var(--color-primary-500);
   background-color: var(--color-primary-50);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.1);
 }
 
 /* 工单类型选择卡片 */
@@ -904,7 +904,7 @@
 .type-input:checked + .type-card {
   border-color: var(--color-primary-500);
   background-color: var(--color-primary-50);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.1);
 }
 
 /* 文件上传拖拽区域 */
