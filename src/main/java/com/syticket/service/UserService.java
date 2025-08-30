@@ -117,4 +117,19 @@ public class UserService {
         
         return userMapper.update(user) > 0;
     }
+    
+    /**
+     * 更新用户默认工作空间
+     * 
+     * @param userId 用户ID
+     * @param workspaceId 工作空间ID
+     * @return 是否成功
+     */
+    public boolean updateDefaultWorkspace(Long userId, Long workspaceId) {
+        User user = new User();
+        user.setId(userId);
+        user.setDefaultWorkspaceId(workspaceId);
+        
+        return userMapper.update(user) > 0;
+    }
 }

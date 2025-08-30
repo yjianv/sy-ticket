@@ -79,4 +79,38 @@ public class WorkspaceService {
     public Workspace getDefaultWorkspace() {
         return getByCode("TEST");
     }
+    
+    /**
+     * 获取用户的当前工作空间
+     * 优先级：URL参数 > 用户偏好 > 第一个可用的工作空间
+     * 
+     * @param urlWorkspaceId URL中的工作空间ID参数
+     * @param userDefaultWorkspaceId 用户默认工作空间ID
+     * @param availableWorkspaces 可用的工作空间列表
+     * @return 当前工作空间
+     */
+    public Workspace getCurrentWorkspace(Long urlWorkspaceId, Long userDefaultWorkspaceId, List<Workspace> availableWorkspaces) {
+        // 1. 优先使用URL参数指定的工作空间
+        if (urlWorkspaceId != null) {
+            Workspace workspace = getById(urlWorkspaceId);
+            if (workspace != null && workspace.getEnabled()) {
+                return workspace;
+            }
+        }
+        
+        // 2. 使用用户偏好的默认工作空间
+        if (userDefaultWorkspaceId != null) {
+            Workspace workspace = getById(userDefaultWorkspaceId);
+            if (workspace != null && workspace.getEnabled()) {
+                return workspace;
+            }
+        }
+        
+        // 3. 使用第一个可用的工作空间
+        if (availableWorkspaces != null && !availableWorkspaces.isEmpty()) {
+            return availableWorkspaces.get(0);
+        }
+        
+        return null;
+    }
 }

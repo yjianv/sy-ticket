@@ -1,8 +1,11 @@
 package com.syticket.controller;
 
+import com.syticket.entity.User;
 import com.syticket.entity.Workspace;
 import com.syticket.service.TicketService;
+import com.syticket.service.UserService;
 import com.syticket.service.WorkspaceService;
+import com.syticket.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,6 +35,9 @@ public class ReportsController {
     @Autowired
     private WorkspaceService workspaceService;
     
+    @Autowired
+    private UserService userService;
+    
     /**
      * 统计报表页面
      */
@@ -41,14 +47,19 @@ public class ReportsController {
         List<Workspace> workspaces = workspaceService.getAllEnabled();
         model.addAttribute("workspaces", workspaces);
         
-        // 确定当前工作空间
-        Workspace currentWorkspace;
-        if (workspaceId != null) {
-            currentWorkspace = workspaceService.getById(workspaceId);
-        } else {
-            currentWorkspace = workspaces.isEmpty() ? null : workspaces.get(0);
-            workspaceId = currentWorkspace != null ? currentWorkspace.getId() : null;
+        // 获取当前用户的默认工作空间偏好
+        Long userDefaultWorkspaceId = null;
+        Long userId = SecurityUtils.getCurrentUserId();
+        if (userId != null) {
+            User currentUser = userService.findById(userId);
+            if (currentUser != null) {
+                userDefaultWorkspaceId = currentUser.getDefaultWorkspaceId();
+            }
         }
+        
+        // 确定当前工作空间（优先级：URL参数 > 用户偏好 > 第一个可用的工作空间）
+        Workspace currentWorkspace = workspaceService.getCurrentWorkspace(workspaceId, userDefaultWorkspaceId, workspaces);
+        workspaceId = currentWorkspace != null ? currentWorkspace.getId() : null;
         model.addAttribute("currentWorkspace", currentWorkspace);
         model.addAttribute("workspaceId", workspaceId);
         

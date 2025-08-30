@@ -18,6 +18,7 @@ public class User {
     private String avatar;
     private String phone;
     private Boolean enabled;
+    private Long defaultWorkspaceId; // 用户默认工作空间ID
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
@@ -96,6 +97,14 @@ public class User {
     
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+    
+    public Long getDefaultWorkspaceId() {
+        return defaultWorkspaceId;
+    }
+    
+    public void setDefaultWorkspaceId(Long defaultWorkspaceId) {
+        this.defaultWorkspaceId = defaultWorkspaceId;
     }
     
     public LocalDateTime getCreatedAt() {

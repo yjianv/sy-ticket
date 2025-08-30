@@ -17,6 +17,18 @@
                 <div class="page-header-left">
                     <h1 class="page-header-title">创建工单</h1>
                     <p class="page-header-subtitle">填写工单信息并提交</p>
+                    <!-- 当前工作空间提示 -->
+                    <div class="mt-2" th:if="${workspaces != null and !workspaces.empty}">
+                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
+                            <i class="fas fa-folder mr-1"></i>
+                            <span>工作空间：</span>
+                            <span th:each="workspace : ${workspaces}" 
+                                  th:if="${(defaultWorkspaceId != null and workspace.id == defaultWorkspaceId) or (defaultWorkspaceId == null and workspaceStat.first)}"
+                                  th:text="${workspace.name}">
+                                工作空间名称
+                            </span>
+                        </span>
+                    </div>
                 </div>
                 <div class="page-header-right">
                     <a href="/tickets" class="btn btn-secondary">
@@ -30,89 +42,89 @@
         <div class="card">
             <form id="ticket-form" action="/tickets/create" method="POST" class="card-body" style="display: flex; flex-direction: column; gap: var(--space-6);">
                 <input type="hidden" id="content-input" name="content" value=""/>
+                <!-- 使用默认工作空间或第一个可用工作空间 -->
+                <input type="hidden" id="workspaceId" name="workspaceId" 
+                       th:value="${defaultWorkspaceId != null ? defaultWorkspaceId : (workspaces != null and !workspaces.empty ? workspaces[0].id : '')}"/>
                 
                 <!-- 基本信息 -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="space-y-6">
                     <!-- 工单标题 -->
-                    <div class="lg:col-span-2">
+                    <div>
                         <div class="form-group">
                             <label for="title" class="form-label required">工单标题</label>
                             <input type="text" id="title" name="title" required class="form-input"
-                                   placeholder="请输入工单标题">
+                                   placeholder="请输入工单标题" maxlength="100">
+                            <div class="form-hint flex justify-between">
+                                <span id="titleCount" class="text-gray-400">0/100</span>
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- 工作空间 -->
-                    <div>
-                        <div class="form-group">
-                            <label for="workspaceId" class="form-label required">工作空间</label>
-                            <select id="workspaceId" name="workspaceId" required class="form-select">
-                                <option value="">请选择工作空间</option>
-                                <option th:each="workspace : ${workspaces}" 
-                                        th:value="${workspace.id}" 
-                                        th:text="${workspace.name}"
-                                        th:selected="${defaultWorkspaceId != null and workspace.id == defaultWorkspaceId}">
-                                    工作空间
-                                </option>
-                            </select>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- 优先级 -->
+                        <div>
+                            <div class="form-group">
+                                <label for="priority" class="form-label required">优先级</label>
+                                <select id="priority" name="priority" required class="form-select">
+                                    <option th:each="priority : ${priorities}" 
+                                            th:value="${priority.name()}" 
+                                            th:text="${priority.description}"
+                                            th:selected="${priority.name() == 'MEDIUM'}">
+                                        优先级
+                                    </option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <!-- 优先级 -->
-                    <div>
-                        <div class="form-group">
-                            <label for="priority" class="form-label required">优先级</label>
-                            <select id="priority" name="priority" required class="form-select">
-                                <option th:each="priority : ${priorities}" 
-                                        th:value="${priority.name()}" 
-                                        th:text="${priority.description}"
-                                        th:selected="${priority.name() == 'MEDIUM'}">
-                                    优先级
-                                </option>
-                            </select>
+                        
+                        <!-- 工单类型 -->
+                        <div>
+                            <div class="form-group">
+                                <label for="type" class="form-label required">工单类型</label>
+                                <select id="type" name="type" required class="form-select">
+                                    <option value="">请选择工单类型</option>
+                                    <option th:each="type : ${types}" 
+                                            th:value="${type.name()}" 
+                                            th:text="${type.description}">
+                                        类型
+                                    </option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <!-- 工单类型 -->
-                    <div>
-                        <label for="type" class="block text-sm font-medium text-gray-700 mb-2">工单类型 *</label>
-                        <select id="type" name="type" required 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                            <option th:each="type : ${types}" 
-                                    th:value="${type.name()}" 
-                                    th:text="${type.description}">
-                                类型
-                            </option>
-                        </select>
-                    </div>
-                    
-                    <!-- 指派给 -->
-                    <div>
-                        <label for="assigneeId" class="block text-sm font-medium text-gray-700 mb-2">指派给</label>
-                        <select id="assigneeId" name="assigneeId" disabled
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed" title="指派功能已禁用">
-                            <option value="">暂不指派</option>
-                            <option th:each="user : ${users}" 
-                                    th:value="${user.id}" 
-                                    th:text="${user.realName} + ' (' + ${user.username} + ')'">
-                                用户
-                            </option>
-                        </select>
-                    </div>
-                    
-                    <!-- 预估工时 -->
-                    <div>
-                        <label for="estimatedHours" class="block text-sm font-medium text-gray-700 mb-2">预估工时（小时）</label>
-                        <input type="number" id="estimatedHours" name="estimatedHours" min="0" step="0.5"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                               placeholder="例如：8">
-                    </div>
-                    
-                    <!-- 截止日期 -->
-                    <div>
-                        <label for="dueDate" class="block text-sm font-medium text-gray-700 mb-2">截止日期</label>
-                        <input type="datetime-local" id="dueDate" name="dueDate"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        
+                        <!-- 指派给 -->
+                        <div>
+                            <div class="form-group">
+                                <label for="assigneeId" class="form-label">指派给</label>
+                                <select id="assigneeId" name="assigneeId" class="form-select">
+                                    <option value="">暂不指派</option>
+                                    <option th:each="user : ${users}" 
+                                            th:value="${user.id}" 
+                                            th:text="${user.realName} + ' (' + ${user.username} + ')'">
+                                        用户
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- 截止日期 -->
+                        <div>
+                            <div class="form-group">
+                                <label for="dueDate" class="form-label">截止日期</label>
+                                <div class="flex gap-2">
+                                    <input type="datetime-local" id="dueDate" name="dueDate" class="form-input">
+                                    <div class="flex-shrink-0">
+                                        <select id="dueDateQuick" class="form-select text-sm">
+                                            <option value="">快捷设置</option>
+                                            <option value="today">今天</option>
+                                            <option value="tomorrow">明天</option>
+                                            <option value="thisWeek">本周末</option>
+                                            <option value="nextWeek">下周</option>
+                                            <option value="nextMonth">下月</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -182,12 +194,94 @@
             // 文件上传相关事件
             initFileUpload();
             
+            // 初始化表单交互功能
+            initFormInteractions();
+            
             // 表单提交处理
             $('#ticket-form').on('submit', function(e) {
                 e.preventDefault();
                 submitForm();
             });
         });
+        
+        // 初始化表单交互功能
+        function initFormInteractions() {
+            // 标题字符计数
+            const titleInput = $('#title');
+            const titleCount = $('#titleCount');
+            
+            titleInput.on('input', function() {
+                const length = $(this).val().length;
+                titleCount.text(length + '/100');
+                
+                // 当接近字数限制时改变颜色
+                if (length > 80) {
+                    titleCount.removeClass('text-gray-400').addClass('text-orange-500');
+                } else if (length === 100) {
+                    titleCount.removeClass('text-orange-500').addClass('text-red-500');
+                } else {
+                    titleCount.removeClass('text-orange-500 text-red-500').addClass('text-gray-400');
+                }
+            });
+            
+            // 快捷日期设置
+            const dueDateInput = $('#dueDate');
+            const dueDateQuick = $('#dueDateQuick');
+            
+            dueDateQuick.on('change', function() {
+                const quickValue = $(this).val();
+                if (!quickValue) return;
+                
+                const now = new Date();
+                let targetDate = new Date(now);
+                
+                switch(quickValue) {
+                    case 'today':
+                        targetDate.setHours(23, 59);
+                        break;
+                    case 'tomorrow':
+                        targetDate.setDate(now.getDate() + 1);
+                        targetDate.setHours(18, 0);
+                        break;
+                    case 'thisWeek':
+                        const daysUntilFriday = 5 - now.getDay();
+                        targetDate.setDate(now.getDate() + daysUntilFriday);
+                        targetDate.setHours(18, 0);
+                        break;
+                    case 'nextWeek':
+                        targetDate.setDate(now.getDate() + 7);
+                        targetDate.setHours(18, 0);
+                        break;
+                    case 'nextMonth':
+                        targetDate.setMonth(now.getMonth() + 1);
+                        targetDate.setHours(18, 0);
+                        break;
+                }
+                
+                // 格式化为 datetime-local 格式
+                const year = targetDate.getFullYear();
+                const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+                const day = String(targetDate.getDate()).padStart(2, '0');
+                const hours = String(targetDate.getHours()).padStart(2, '0');
+                const minutes = String(targetDate.getMinutes()).padStart(2, '0');
+                
+                const dateTimeString = `${year}-${month}-${day}T${hours}:${minutes}`;
+                dueDateInput.val(dateTimeString);
+                
+                // 重置快捷选择
+                dueDateQuick.val('');
+            });
+            
+            // 输入时移除错误样式
+            $('.form-input, .form-select').on('input change', function() {
+                $(this).removeClass('border-red-500');
+            });
+            
+            // 编辑器获得焦点时移除错误样式
+            $('#editor').on('click', function() {
+                $(this).removeClass('border-red-500');
+            });
+        }
         
         // 初始化编辑器
         function initEditor() {
@@ -381,28 +475,48 @@
                 const priority = $('#priority').val();
                 const type = $('#type').val();
                 
+                // 移除之前的错误样式
+                $('.form-input, .form-select').removeClass('border-red-500');
+                
                 if (!title) {
+                    $('#title').addClass('border-red-500').focus();
                     AppUtils.showError('请输入工单标题');
                     return;
                 }
                 
+                if (title.length < 5) {
+                    $('#title').addClass('border-red-500').focus();
+                    AppUtils.showError('工单标题至少需要5个字符');
+                    return;
+                }
+                
+                // 工作空间现在是隐藏字段，检查是否有值
                 if (!workspaceId) {
-                    AppUtils.showError('请选择工作空间');
+                    AppUtils.showError('系统错误：未找到有效的工作空间');
                     return;
                 }
                 
                 if (!priority) {
+                    $('#priority').addClass('border-red-500').focus();
                     AppUtils.showError('请选择优先级');
                     return;
                 }
                 
                 if (!type) {
+                    $('#type').addClass('border-red-500').focus();
                     AppUtils.showError('请选择工单类型');
                     return;
                 }
                 
-                if (!editorData.blocks || editorData.blocks.length === 0) {
-                    AppUtils.showError('请输入工单描述');
+                // 检查编辑器内容
+                const hasContent = editorData.blocks && editorData.blocks.length > 0 && 
+                    editorData.blocks.some(block => block.data && 
+                        ((block.data.text && block.data.text.trim()) || 
+                         (block.data.items && block.data.items.length > 0)));
+                
+                if (!hasContent) {
+                    $('#editor').addClass('border-red-500');
+                    AppUtils.showError('请输入工单描述内容');
                     return;
                 }
                 

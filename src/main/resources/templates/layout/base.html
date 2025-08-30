@@ -224,9 +224,30 @@
             }
             
             function switchWorkspace(workspaceId) {
-                const currentUrl = new URL(window.location);
-                currentUrl.searchParams.set('workspaceId', workspaceId);
-                window.location.href = currentUrl.toString();
+                // 显示加载状态
+                const $current = $('#workspace-current');
+                $current.addClass('switching');
+                
+                // 发送AJAX请求切换工作空间
+                $.ajax({
+                    url: '/api/workspace/switch/' + workspaceId,
+                    type: 'POST',
+                    success: function(response) {
+                        if (response.success) {
+                            // 切换成功，刷新页面以显示新的工作空间内容
+                            window.location.reload();
+                        } else {
+                            // 切换失败，显示错误消息
+                            AppUtils.showError(response.message || '工作空间切换失败');
+                            $current.removeClass('switching');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // 请求失败
+                        AppUtils.showError('工作空间切换失败：网络错误');
+                        $current.removeClass('switching');
+                    }
+                });
             }
             
 

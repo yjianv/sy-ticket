@@ -1,7 +1,9 @@
 package com.syticket.controller;
 
+import com.syticket.entity.User;
 import com.syticket.entity.Workspace;
 import com.syticket.service.TicketService;
+import com.syticket.service.UserService;
 import com.syticket.service.WorkspaceService;
 import com.syticket.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ public class HomeController {
     
     @Autowired
     private TicketService ticketService;
+    
+    @Autowired
+    private UserService userService;
     
     /**
      * 登录页面
@@ -52,13 +57,18 @@ public class HomeController {
         List<Workspace> workspaces = workspaceService.getAllEnabled();
         model.addAttribute("workspaces", workspaces);
         
-        // 确定当前工作空间
-        Workspace currentWorkspace;
-        if (workspaceId != null) {
-            currentWorkspace = workspaceService.getById(workspaceId);
-        } else {
-            currentWorkspace = workspaces.isEmpty() ? null : workspaces.get(0);
+        // 获取当前用户的默认工作空间偏好
+        Long userDefaultWorkspaceId = null;
+        Long userId = SecurityUtils.getCurrentUserId();
+        if (userId != null) {
+            User currentUser = userService.findById(userId);
+            if (currentUser != null) {
+                userDefaultWorkspaceId = currentUser.getDefaultWorkspaceId();
+            }
         }
+        
+        // 确定当前工作空间（优先级：URL参数 > 用户偏好 > 第一个可用的工作空间）
+        Workspace currentWorkspace = workspaceService.getCurrentWorkspace(workspaceId, userDefaultWorkspaceId, workspaces);
         model.addAttribute("currentWorkspace", currentWorkspace);
         
         if (currentWorkspace != null) {
@@ -74,7 +84,6 @@ public class HomeController {
             model.addAttribute("closedCount", closedCount);
             
             // 用户相关的工单
-            Long userId = SecurityUtils.getCurrentUserId();
             if (userId != null) {
                 model.addAttribute("userTickets", ticketService.getUserRelatedTickets(userId, currentWorkspace.getId()));
             }

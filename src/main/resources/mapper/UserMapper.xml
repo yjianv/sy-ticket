@@ -12,6 +12,7 @@
         <result property="avatar" column="avatar"/>
         <result property="phone" column="phone"/>
         <result property="enabled" column="enabled"/>
+        <result property="defaultWorkspaceId" column="default_workspace_id"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
@@ -38,8 +39,8 @@
 
     <!-- 插入用户 -->
     <insert id="insert" parameterType="com.syticket.entity.User" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO users (username, password, email, real_name, avatar, phone, enabled)
-        VALUES (#{username}, #{password}, #{email}, #{realName}, #{avatar}, #{phone}, #{enabled})
+        INSERT INTO users (username, password, email, real_name, avatar, phone, enabled, default_workspace_id)
+        VALUES (#{username}, #{password}, #{email}, #{realName}, #{avatar}, #{phone}, #{enabled}, #{defaultWorkspaceId})
     </insert>
 
     <!-- 更新用户 -->
@@ -52,6 +53,7 @@
             <if test="avatar != null">avatar = #{avatar},</if>
             <if test="phone != null">phone = #{phone},</if>
             <if test="enabled != null">enabled = #{enabled},</if>
+            <if test="defaultWorkspaceId != null">default_workspace_id = #{defaultWorkspaceId},</if>
             updated_at = CURRENT_TIMESTAMP
         </set>
         WHERE id = #{id}
