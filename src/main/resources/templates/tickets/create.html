@@ -34,22 +34,22 @@
                 <input type="hidden" id="workspaceId" name="workspaceId" 
                        th:value="${defaultWorkspaceId != null ? defaultWorkspaceId : (workspaces != null and !workspaces.empty ? workspaces[0].id : '')}"/>
                 
-                <!-- 第一步：基本信息 -->
-                <div class="card" id="step-basic">
+                <!-- 创建工单表单 -->
+                <div class="card" id="ticket-form-card">
                     <div class="card-header" style="padding: 1rem 1.5rem 0.75rem;">
                         <div class="flex items-center space-x-3">
                             <div class="flex-shrink-0">
-                                <div class="w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
-                                    1
+                                <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center">
+                                    <i class="fas fa-ticket-alt text-sm"></i>
                                 </div>
                             </div>
                             <div>
-                                <h3 class="text-base font-medium text-gray-900">基本信息</h3>
-                                <p class="text-xs text-gray-500">请填写工单的基本信息</p>
+                                <h3 class="text-lg font-medium text-gray-900">创建工单</h3>
+                                <p class="text-sm text-gray-500">填写工单的完整信息并提交</p>
                             </div>
                         </div>
                     </div>
-                    <div class="card-body space-y-4" style="padding: 1rem 1.5rem 1.5rem;">
+                    <div class="card-body space-y-6" style="padding: 1rem 1.5rem 1.5rem;">
                         <!-- 工单标题 -->
                         <div>
                             <div class="form-group">
@@ -113,31 +113,14 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- 第二步：详细描述 -->
-                <div class="card" id="step-description">
-                    <div class="card-header" style="padding: 1rem 1.5rem 0.75rem;">
-                        <div class="flex items-center space-x-3">
-                            <div class="flex-shrink-0">
-                                <div class="w-7 h-7 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-medium" id="step-2-indicator">
-                                    2
-                                </div>
-                            </div>
-                            <div>
-                                <h3 class="text-base font-medium text-gray-900">详细描述</h3>
-                                <p class="text-xs text-gray-500">详细描述您遇到的问题或需求</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body" style="padding: 1rem 1.5rem 1.5rem;">
+                        
+                        <!-- 工单描述 -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 工单描述 <span class="text-red-500">*</span>
                             </label>
                             <div class="border border-gray-300 rounded-lg focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
-                                <div id="editor" class="min-h-[400px]"></div>
+                                <div id="editor" class="min-h-[300px]"></div>
                             </div>
                             <div class="mt-2 flex items-center justify-between">
                                 <p class="text-xs text-gray-500">
@@ -150,56 +133,46 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- 第三步：附件上传 -->
-                <div class="card" id="step-attachments">
-                    <div class="card-header" style="padding: 1rem 1.5rem 0.75rem;">
-                        <div class="flex items-center space-x-3">
-                            <div class="flex-shrink-0">
-                                <div class="w-7 h-7 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-medium" id="step-3-indicator">
-                                    3
+                        
+                        <!-- 附件上传 -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                附件上传 <span class="text-xs text-gray-500">（可选）</span>
+                            </label>
+                            <div class="drag-drop-area compact" id="file-drop-area">
+                                <div class="flex items-center justify-center">
+                                    <div class="text-center">
+                                        <i class="fas fa-paperclip text-base text-gray-400 mb-1"></i>
+                                        <p class="text-sm text-gray-600">拖拽文件到这里或 
+                                            <button type="button" id="file-select-btn" class="text-blue-600 hover:text-blue-800 underline">选择文件</button>
+                                        </p>
+                                        <p class="text-xs text-gray-400 mt-1">支持图片、PDF、文档等格式，最大10MB</p>
+                                        <input type="file" id="file-input" multiple class="hidden" accept="*/*">
+                                    </div>
                                 </div>
                             </div>
-                            <div>
-                                <h3 class="text-base font-medium text-gray-900">附件上传</h3>
-                                <p class="text-xs text-gray-500">上传相关文件或截图（可选）</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body" style="padding: 1rem 1.5rem 1.5rem;">
-                        <div class="drag-drop-area" id="file-drop-area" style="padding: 1.5rem; border-style: dashed; border-width: 1px;">
-                            <div class="flex items-center justify-center">
-                                <div class="text-center">
-                                    <i class="fas fa-paperclip text-2xl text-gray-400 mb-2"></i>
-                                    <p class="text-sm text-gray-600">拖拽文件到这里或 
-                                        <button type="button" id="file-select-btn" class="text-blue-600 hover:text-blue-800 underline">选择文件</button>
-                                    </p>
-                                    <p class="text-xs text-gray-400 mt-1">支持图片、PDF、文档等格式</p>
-                                    <input type="file" id="file-input" multiple class="hidden" accept="*/*">
-                                </div>
-                            </div>
+                            
+                            <!-- 文件列表 -->
+                            <div id="file-list" class="mt-3 space-y-2"></div>
                         </div>
                         
-                        <!-- 文件列表 -->
-                        <div id="file-list" class="mt-3 space-y-2"></div>
-                    </div>
-                </div>
-                
-                <!-- 提交区域 -->
-                <div class="card" id="step-submit">
-                    <div class="card-body" style="padding: 1rem 1.5rem;">
-                        <div class="flex items-center justify-between">
-                            <div class="flex space-x-3">
-                                <button type="button" onclick="history.back()" 
-                                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-150 ease-in-out text-sm">
-                                    <i class="fas fa-times mr-1"></i>取消
-                                </button>
-                                <button type="submit" id="submit-btn"
-                                        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed text-sm">
-                                    <i class="fas fa-paper-plane mr-1"></i>创建工单
-                                </button>
+                        <!-- 提交区域 -->
+                        <div class="border-t border-gray-200 pt-5 mt-6">
+                            <div class="flex items-center justify-between ticket-form-submit-desktop">
+                                <div class="text-sm text-gray-600 flex-1">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    工单提交后将进入待处理状态，您可以随时查看处理进度
+                                </div>
+                                <div class="flex space-x-3 ml-4">
+                                    <button type="button" onclick="history.back()" 
+                                            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-150 ease-in-out text-sm">
+                                        <i class="fas fa-times mr-1"></i>取消
+                                    </button>
+                                    <button type="submit" id="submit-btn"
+                                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium">
+                                        <i class="fas fa-paper-plane mr-1"></i>创建工单
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

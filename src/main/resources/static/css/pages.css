@@ -261,7 +261,7 @@
 .drag-drop-area {
   border: 2px dashed var(--color-border);
   border-radius: var(--radius-md);
-  padding: var(--space-8);
+  padding: var(--space-4);
   text-align: center;
   transition: all var(--transition-base);
   background-color: var(--color-surface-secondary);
@@ -276,6 +276,21 @@
 .drag-drop-area:hover {
   border-color: var(--color-primary-300);
   background-color: var(--color-primary-25);
+}
+
+/* 紧凑型拖拽区域 */
+.drag-drop-area.compact {
+  padding: var(--space-3);
+  border-width: 1px;
+}
+
+.drag-drop-area.compact i {
+  font-size: var(--text-base);
+  margin-bottom: var(--space-1);
+}
+
+.drag-drop-area.compact p {
+  margin-bottom: var(--space-1);
 }
 
 .drag-drop-icon {
