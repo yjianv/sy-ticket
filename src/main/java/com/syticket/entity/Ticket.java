@@ -84,6 +84,7 @@ public class Ticket {
     private Long creatorId;
     private Long assigneeId;
     private Long resolverId;
+    private Long moduleId; // 关联模块ID
     private BigDecimal estimatedHours;
     private BigDecimal actualHours;
     private LocalDateTime dueDate;
@@ -97,6 +98,7 @@ public class Ticket {
     private User creator;
     private User assignee;
     private User resolver;
+    private Module module; // 关联模块
     
     // 构造函数
     public Ticket() {
@@ -109,6 +111,17 @@ public class Ticket {
         this.type = type;
         this.workspaceId = workspaceId;
         this.creatorId = creatorId;
+        this.status = Status.OPEN;
+    }
+    
+    public Ticket(String title, String content, Priority priority, Type type, Long workspaceId, Long creatorId, Long moduleId) {
+        this.title = title;
+        this.content = content;
+        this.priority = priority;
+        this.type = type;
+        this.workspaceId = workspaceId;
+        this.creatorId = creatorId;
+        this.moduleId = moduleId;
         this.status = Status.OPEN;
     }
     
@@ -289,6 +302,22 @@ public class Ticket {
         this.resolver = resolver;
     }
     
+    public Long getModuleId() {
+        return moduleId;
+    }
+    
+    public void setModuleId(Long moduleId) {
+        this.moduleId = moduleId;
+    }
+    
+    public Module getModule() {
+        return module;
+    }
+    
+    public void setModule(Module module) {
+        this.module = module;
+    }
+    
     @Override
     public String toString() {
         return "Ticket{" +
@@ -298,6 +327,7 @@ public class Ticket {
                 ", priority=" + priority +
                 ", status=" + status +
                 ", type=" + type +
+                ", moduleId=" + moduleId +
                 '}';
     }
 }

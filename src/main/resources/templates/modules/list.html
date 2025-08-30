@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">模块管理</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-header-left">
+                    <h1 class="page-header-title">模块管理</h1>
+                    <p class="page-header-subtitle">管理系统功能模块和负责人</p>
+                </div>
+                <div class="page-header-right">
+                    <a href="/modules/create" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>新建模块
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 搜索栏 -->
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" action="/modules" class="search-form">
+                    <div class="search-form-row">
+                        <div class="search-form-group">
+                            <label for="name">模块名称</label>
+                            <input type="text" 
+                                   id="name" 
+                                   name="name" 
+                                   class="form-control" 
+                                   placeholder="搜索模块名称"
+                                   th:value="${name}">
+                        </div>
+                        
+                        <div class="search-form-group">
+                            <label for="enabled">状态</label>
+                            <select id="enabled" name="enabled" class="form-control">
+                                <option value="">全部状态</option>
+                                <option value="true" th:selected="${enabled != null and enabled}">启用</option>
+                                <option value="false" th:selected="${enabled != null and !enabled}">禁用</option>
+                            </select>
+                        </div>
+                        
+                        <div class="search-form-group">
+                            <label>&nbsp;</label>
+                            <div class="search-form-buttons">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i>搜索
+                                </button>
+                                <a href="/modules" class="btn btn-secondary">
+                                    <i class="fas fa-undo"></i>重置
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 模块列表 -->
+        <div class="card">
+            <div class="card-body">
+                <div th:if="${pageInfo.list != null and !pageInfo.list.empty}">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>模块名称</th>
+                                    <th>描述</th>
+                                    <th>负责人</th>
+                                    <th>状态</th>
+                                    <th>排序</th>
+                                    <th>创建时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="module : ${pageInfo.list}">
+                                    <td>
+                                        <a th:href="@{/modules/{id}(id=${module.id})}" 
+                                           class="text-primary font-medium hover:underline">
+                                            <span th:text="${module.name}">模块名称</span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span th:text="${module.description ?: '-'}" 
+                                              class="text-gray-600"
+                                              th:title="${module.description}">描述</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${module.owner != null}" 
+                                              class="text-gray-800"
+                                              th:text="${module.owner.realName ?: module.owner.username}">负责人</span>
+                                        <span th:unless="${module.owner != null}" 
+                                              class="text-gray-400">未设置</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${module.enabled}" 
+                                              class="badge badge-success">启用</span>
+                                        <span th:unless="${module.enabled}" 
+                                              class="badge badge-secondary">禁用</span>
+                                    </td>
+                                    <td>
+                                        <span th:text="${module.sortOrder ?: 0}" 
+                                              class="text-gray-600">排序</span>
+                                    </td>
+                                    <td>
+                                        <span th:text="${#temporals.format(module.createdAt, 'MM-dd HH:mm')}" 
+                                              class="text-gray-600">创建时间</span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a th:href="@{/modules/{id}/edit(id=${module.id})}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>编辑
+                                            </a>
+                                            
+                                            <button th:if="${module.enabled}" 
+                                                    type="button" 
+                                                    class="btn btn-sm btn-outline-warning" 
+                                                    onclick="disableModule(this)"
+                                                    th:data-id="${module.id}"
+                                                    th:data-name="${module.name}">
+                                                <i class="fas fa-ban"></i>禁用
+                                            </button>
+                                            
+                                            <button th:unless="${module.enabled}" 
+                                                    type="button" 
+                                                    class="btn btn-sm btn-outline-success" 
+                                                    onclick="enableModule(this)"
+                                                    th:data-id="${module.id}"
+                                                    th:data-name="${module.name}">
+                                                <i class="fas fa-check"></i>启用
+                                            </button>
+                                            
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-danger" 
+                                                    onclick="deleteModule(this)"
+                                                    th:data-id="${module.id}"
+                                                    th:data-name="${module.name}">
+                                                <i class="fas fa-trash"></i>删除
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 分页 -->
+                    <div th:if="${pageInfo.pages > 1}" class="pagination-wrapper">
+                        <nav class="pagination-nav">
+                            <div class="pagination-info">
+                                显示第 <span th:text="${pageInfo.startRow}">1</span> 到 
+                                <span th:text="${pageInfo.endRow}">20</span> 条，
+                                共 <span th:text="${pageInfo.total}">100</span> 条记录
+                            </div>
+                            
+                            <ul class="pagination">
+                                <li th:if="${pageInfo.hasPreviousPage}" class="page-item">
+                                    <a th:href="@{/modules(page=${pageInfo.prePage}, name=${name}, enabled=${enabled})}" 
+                                       class="page-link">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                </li>
+                                
+                                <li th:each="nav : ${pageInfo.navigatepageNums}" 
+                                    th:class="${nav == pageInfo.pageNum} ? 'page-item active' : 'page-item'">
+                                    <a th:href="@{/modules(page=${nav}, name=${name}, enabled=${enabled})}" 
+                                       th:text="${nav}"
+                                       class="page-link">1</a>
+                                </li>
+                                
+                                <li th:if="${pageInfo.hasNextPage}" class="page-item">
+                                    <a th:href="@{/modules(page=${pageInfo.nextPage}, name=${name}, enabled=${enabled})}" 
+                                       class="page-link">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- 空状态 -->
+                <div th:if="${pageInfo.list == null or pageInfo.list.empty}" class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-cubes"></i>
+                    </div>
+                    <h3 class="empty-state-title">暂无模块</h3>
+                    <p class="empty-state-text">还没有创建任何模块，点击上方按钮创建第一个模块吧</p>
+                    <a href="/modules/create" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>创建模块
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 隐藏表单用于操作 -->
+    <form id="actionForm" method="POST" style="display: none;">
+        <!-- 用于提交操作的隐藏表单 -->
+    </form>
+</body>
+
+<th:block layout:fragment="scripts">
+    <script>
+        function enableModule(button) {
+            const moduleId = button.getAttribute('data-id');
+            const moduleName = button.getAttribute('data-name');
+            
+            if (confirm('确定要启用模块 "' + moduleName + '" 吗？')) {
+                const form = document.getElementById('actionForm');
+                form.action = '/modules/' + moduleId + '/enable';
+                form.submit();
+            }
+        }
+        
+        function disableModule(button) {
+            const moduleId = button.getAttribute('data-id');
+            const moduleName = button.getAttribute('data-name');
+            
+            if (confirm('确定要禁用模块 "' + moduleName + '" 吗？')) {
+                const form = document.getElementById('actionForm');
+                form.action = '/modules/' + moduleId + '/disable';
+                form.submit();
+            }
+        }
+        
+        function deleteModule(button) {
+            const moduleId = button.getAttribute('data-id');
+            const moduleName = button.getAttribute('data-name');
+            
+            if (confirm('确定要删除模块 "' + moduleName + '" 吗？\n\n注意：删除后不可恢复！')) {
+                const form = document.getElementById('actionForm');
+                form.action = '/modules/' + moduleId + '/delete';
+                form.submit();
+            }
+        }
+    </script>
+</th:block>
+</html>

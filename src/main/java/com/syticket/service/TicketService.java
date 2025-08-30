@@ -1,5 +1,6 @@
 package com.syticket.service;
 
+import com.syticket.entity.Module;
 import com.syticket.entity.Ticket;
 import com.syticket.entity.User;
 import com.syticket.entity.Workspace;
@@ -40,6 +41,9 @@ public class TicketService {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private ModuleService moduleService;
     
     /**
      * 分页查询工单列表
@@ -129,6 +133,14 @@ public class TicketService {
         
         // 设置默认状态
         ticket.setStatus(Ticket.Status.OPEN);
+        
+        // 自动认领逻辑：如果工单有关联模块且模块有负责人，则自动设置指派人
+        if (ticket.getModuleId() != null && ticket.getAssigneeId() == null) {
+            Module module = moduleService.getById(ticket.getModuleId());
+            if (module != null && module.getOwnerId() != null && module.getEnabled()) {
+                ticket.setAssigneeId(module.getOwnerId());
+            }
+        }
         
         ticketMapper.insert(ticket);
         Ticket createdTicket = getById(ticket.getId());

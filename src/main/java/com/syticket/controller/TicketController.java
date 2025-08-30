@@ -1,7 +1,12 @@
 package com.syticket.controller;
 
 import com.github.pagehelper.PageInfo;
-import com.syticket.entity.*;
+import com.syticket.entity.FileEntity;
+import com.syticket.entity.Ticket;
+import com.syticket.entity.TicketComment;
+import com.syticket.entity.TicketFlow;
+import com.syticket.entity.User;
+import com.syticket.entity.Workspace;
 import com.syticket.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,6 +48,9 @@ public class TicketController {
     
     @Autowired
     private FileService fileService;
+    
+    @Autowired
+    private ModuleService moduleService;
     
     /**
      * 工单列表页面
@@ -143,6 +151,12 @@ public class TicketController {
         }
         model.addAttribute("defaultWorkspaceId", defaultWorkspaceId);
         
+        // 获取启用的模块列表
+        if (defaultWorkspaceId != null) {
+            List<com.syticket.entity.Module> modules = moduleService.getEnabledByWorkspaceId(defaultWorkspaceId);
+            model.addAttribute("modules", modules);
+        }
+        
         return "tickets/create";
     }
     
@@ -155,6 +169,7 @@ public class TicketController {
                               @RequestParam String priority,
                               @RequestParam String type,
                               @RequestParam Long workspaceId,
+                              @RequestParam(required = false) Long moduleId,
                               @RequestParam(required = false) String estimatedHours,
                               @RequestParam(required = false) String attachmentIds,
                               RedirectAttributes redirectAttributes) {
@@ -166,6 +181,7 @@ public class TicketController {
             ticket.setPriority(Ticket.Priority.valueOf(priority));
             ticket.setType(Ticket.Type.valueOf(type));
             ticket.setWorkspaceId(workspaceId);
+            ticket.setModuleId(moduleId);
             
             if (estimatedHours != null && !estimatedHours.trim().isEmpty()) {
                 ticket.setEstimatedHours(new BigDecimal(estimatedHours));

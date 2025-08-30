@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE" th:text="${module.name}">模块详情</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-header-left">
+                    <h1 class="page-header-title" th:text="${module.name}">模块名称</h1>
+                    <p class="page-header-subtitle">模块详细信息</p>
+                </div>
+                <div class="page-header-right">
+                    <a th:href="@{/modules/{id}/edit(id=${module.id})}" class="btn btn-primary">
+                        <i class="fas fa-edit"></i>编辑模块
+                    </a>
+                    <a href="/modules" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>返回列表
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- 模块信息 -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">基本信息</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label class="info-label">模块名称</label>
+                                <div class="info-value" th:text="${module.name}">模块名称</div>
+                            </div>
+                            
+                            <div class="info-item">
+                                <label class="info-label">状态</label>
+                                <div class="info-value">
+                                    <span th:if="${module.enabled}" class="badge badge-success">启用</span>
+                                    <span th:unless="${module.enabled}" class="badge badge-secondary">禁用</span>
+                                </div>
+                            </div>
+                            
+                            <div class="info-item">
+                                <label class="info-label">负责人</label>
+                                <div class="info-value">
+                                    <span th:if="${module.owner != null}" 
+                                          th:text="${module.owner.realName ?: module.owner.username}">负责人</span>
+                                    <span th:unless="${module.owner != null}" class="text-muted">未设置</span>
+                                </div>
+                            </div>
+                            
+                            <div class="info-item">
+                                <label class="info-label">排序</label>
+                                <div class="info-value" th:text="${module.sortOrder ?: 0}">0</div>
+                            </div>
+                            
+                            <div class="info-item full-width">
+                                <label class="info-label">模块描述</label>
+                                <div class="info-value">
+                                    <span th:if="${module.description != null and !module.description.empty}" 
+                                          th:text="${module.description}">模块描述</span>
+                                    <span th:unless="${module.description != null and !module.description.empty}" 
+                                          class="text-muted">暂无描述</span>
+                                </div>
+                            </div>
+                            
+                            <div class="info-item">
+                                <label class="info-label">创建时间</label>
+                                <div class="info-value" th:text="${#temporals.format(module.createdAt, 'yyyy-MM-dd HH:mm:ss')}">创建时间</div>
+                            </div>
+                            
+                            <div class="info-item">
+                                <label class="info-label">更新时间</label>
+                                <div class="info-value" th:text="${#temporals.format(module.updatedAt, 'yyyy-MM-dd HH:mm:ss')}">更新时间</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 操作面板 -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">操作</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="button-group vertical">
+                            <a th:href="@{/modules/{id}/edit(id=${module.id})}" 
+                               class="btn btn-primary btn-block">
+                                <i class="fas fa-edit"></i>编辑模块
+                            </a>
+                            
+                            <button th:if="${module.enabled}" 
+                                    type="button" 
+                                    class="btn btn-warning btn-block" 
+                                    onclick="disableModule()"
+                                    th:data-id="${module.id}"
+                                    th:data-name="${module.name}">
+                                <i class="fas fa-ban"></i>禁用模块
+                            </button>
+                            
+                            <button th:unless="${module.enabled}" 
+                                    type="button" 
+                                    class="btn btn-success btn-block" 
+                                    onclick="enableModule()"
+                                    th:data-id="${module.id}"
+                                    th:data-name="${module.name}">
+                                <i class="fas fa-check"></i>启用模块
+                            </button>
+                            
+                            <button type="button" 
+                                    class="btn btn-danger btn-block" 
+                                    onclick="deleteModule()"
+                                    th:data-id="${module.id}"
+                                    th:data-name="${module.name}">
+                                <i class="fas fa-trash"></i>删除模块
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 统计信息 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">统计信息</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value">-</div>
+                                <div class="stat-label">关联工单</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">-</div>
+                                <div class="stat-label">待处理</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">-</div>
+                                <div class="stat-label">已完成</div>
+                            </div>
+                        </div>
+                        <p class="text-muted small">工单统计功能待实现</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 隐藏表单用于操作 -->
+    <form id="actionForm" method="POST" style="display: none;">
+        <!-- 用于提交操作的隐藏表单 -->
+    </form>
+</body>
+
+<th:block layout:fragment="scripts">
+    <script>
+        function enableModule() {
+            const moduleId = [[${module.id}]];
+            const moduleName = [[${module.name}]];
+            
+            if (confirm('确定要启用模块 "' + moduleName + '" 吗？')) {
+                const form = document.getElementById('actionForm');
+                form.action = '/modules/' + moduleId + '/enable';
+                form.submit();
+            }
+        }
+        
+        function disableModule() {
+            const moduleId = [[${module.id}]];
+            const moduleName = [[${module.name}]];
+            
+            if (confirm('确定要禁用模块 "' + moduleName + '" 吗？')) {
+                const form = document.getElementById('actionForm');
+                form.action = '/modules/' + moduleId + '/disable';
+                form.submit();
+            }
+        }
+        
+        function deleteModule() {
+            const moduleId = [[${module.id}]];
+            const moduleName = [[${module.name}]];
+            
+            if (confirm('确定要删除模块 "' + moduleName + '" 吗？\n\n注意：删除后不可恢复！')) {
+                const form = document.getElementById('actionForm');
+                form.action = '/modules/' + moduleId + '/delete';
+                form.submit();
+            }
+        }
+    </script>
+</th:block>
+</html>

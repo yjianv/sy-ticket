@@ -103,6 +103,24 @@
                             </div>
                         </div>
                         
+                        <!-- 所属模块选择 -->
+                        <div th:if="${modules != null and !modules.empty}">
+                            <label class="form-label block mb-2">所属模块</label>
+                            <div class="form-group">
+                                <select class="form-input" id="moduleId" name="moduleId">
+                                    <option value="">请选择模块（可选）</option>
+                                    <option th:each="module : ${modules}" 
+                                            th:value="${module.id}" 
+                                            th:text="${module.name + (module.owner != null ? ' (' + module.owner.realName + ')' : '')}"
+                                            th:title="${module.description}">
+                                    </option>
+                                </select>
+                                <div class="form-hint mt-2">
+                                    <span class="text-sm text-gray-500">选择模块后，工单将自动分配给模块负责人</span>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- 工单描述 -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">

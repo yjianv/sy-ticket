@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syticket.mapper.ModuleMapper">
+    
+    <!-- 结果映射 -->
+    <resultMap id="ModuleResultMap" type="com.syticket.entity.Module">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+        <result column="owner_id" property="ownerId"/>
+        <result column="workspace_id" property="workspaceId"/>
+        <result column="enabled" property="enabled"/>
+        <result column="sort_order" property="sortOrder"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        
+        <!-- 关联对象 -->
+        <association property="owner" javaType="com.syticket.entity.User">
+            <id column="owner_id" property="id"/>
+            <result column="owner_username" property="username"/>
+            <result column="owner_real_name" property="realName"/>
+            <result column="owner_email" property="email"/>
+        </association>
+        
+        <association property="workspace" javaType="com.syticket.entity.Workspace">
+            <id column="workspace_id" property="id"/>
+            <result column="workspace_name" property="name"/>
+            <result column="workspace_description" property="description"/>
+        </association>
+    </resultMap>
+    
+    <!-- 基础列 -->
+    <sql id="Base_Column_List">
+        id, name, description, owner_id, workspace_id, enabled, sort_order, created_at, updated_at
+    </sql>
+    
+    <!-- 带关联对象的列 -->
+    <sql id="Base_Column_List_With_Relations">
+        m.id, m.name, m.description, m.owner_id, m.workspace_id, m.enabled, m.sort_order, m.created_at, m.updated_at,
+        u.username as owner_username, u.real_name as owner_real_name, u.email as owner_email,
+        w.name as workspace_name, w.description as workspace_description
+    </sql>
+    
+    <!-- 插入模块 -->
+    <insert id="insert" parameterType="com.syticket.entity.Module" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO modules (name, description, owner_id, workspace_id, enabled, sort_order, created_at, updated_at)
+        VALUES (#{name}, #{description}, #{ownerId}, #{workspaceId}, #{enabled}, #{sortOrder}, NOW(), NOW())
+    </insert>
+    
+    <!-- 根据ID删除模块 -->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM modules WHERE id = #{id}
+    </delete>
+    
+    <!-- 更新模块 -->
+    <update id="update" parameterType="com.syticket.entity.Module">
+        UPDATE modules
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="ownerId != null">owner_id = #{ownerId},</if>
+            <if test="workspaceId != null">workspace_id = #{workspaceId},</if>
+            <if test="enabled != null">enabled = #{enabled},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            updated_at = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+    
+    <!-- 根据ID查询模块 -->
+    <select id="selectById" parameterType="java.lang.Long" resultMap="ModuleResultMap">
+        SELECT <include refid="Base_Column_List_With_Relations"/>
+        FROM modules m
+        LEFT JOIN users u ON m.owner_id = u.id
+        LEFT JOIN workspaces w ON m.workspace_id = w.id
+        WHERE m.id = #{id}
+    </select>
+    
+    <!-- 根据工作空间ID查询模块列表 -->
+    <select id="selectByWorkspaceId" parameterType="java.lang.Long" resultMap="ModuleResultMap">
+        SELECT <include refid="Base_Column_List_With_Relations"/>
+        FROM modules m
+        LEFT JOIN users u ON m.owner_id = u.id
+        LEFT JOIN workspaces w ON m.workspace_id = w.id
+        WHERE m.workspace_id = #{workspaceId}
+        ORDER BY m.sort_order ASC, m.created_at ASC
+    </select>
+    
+    <!-- 根据工作空间ID查询启用的模块列表 -->
+    <select id="selectEnabledByWorkspaceId" parameterType="java.lang.Long" resultMap="ModuleResultMap">
+        SELECT <include refid="Base_Column_List_With_Relations"/>
+        FROM modules m
+        LEFT JOIN users u ON m.owner_id = u.id
+        LEFT JOIN workspaces w ON m.workspace_id = w.id
+        WHERE m.workspace_id = #{workspaceId} AND m.enabled = true
+        ORDER BY m.sort_order ASC, m.created_at ASC
+    </select>
+    
+    <!-- 查询所有模块 -->
+    <select id="selectAll" resultMap="ModuleResultMap">
+        SELECT <include refid="Base_Column_List_With_Relations"/>
+        FROM modules m
+        LEFT JOIN users u ON m.owner_id = u.id
+        LEFT JOIN workspaces w ON m.workspace_id = w.id
+        ORDER BY m.workspace_id ASC, m.sort_order ASC, m.created_at ASC
+    </select>
+    
+    <!-- 根据条件查询模块列表 -->
+    <select id="selectByCondition" resultMap="ModuleResultMap">
+        SELECT <include refid="Base_Column_List_With_Relations"/>
+        FROM modules m
+        LEFT JOIN users u ON m.owner_id = u.id
+        LEFT JOIN workspaces w ON m.workspace_id = w.id
+        <where>
+            <if test="workspaceId != null">
+                AND m.workspace_id = #{workspaceId}
+            </if>
+            <if test="name != null and name != ''">
+                AND m.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="enabled != null">
+                AND m.enabled = #{enabled}
+            </if>
+        </where>
+        ORDER BY m.sort_order ASC, m.created_at ASC
+    </select>
+    
+</mapper>

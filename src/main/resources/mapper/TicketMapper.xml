@@ -15,6 +15,7 @@
         <result property="creatorId" column="creator_id"/>
         <result property="assigneeId" column="assignee_id"/>
         <result property="resolverId" column="resolver_id"/>
+        <result property="moduleId" column="module_id"/>
         <result property="estimatedHours" column="estimated_hours"/>
         <result property="actualHours" column="actual_hours"/>
         <result property="dueDate" column="due_date"/>
@@ -54,12 +55,22 @@
             <result property="realName" column="resolver_real_name"/>
             <result property="avatar" column="resolver_avatar"/>
         </association>
+        
+        <!-- 关联模块 -->
+        <association property="module" javaType="com.syticket.entity.Module">
+            <id property="id" column="module_id"/>
+            <result property="name" column="module_name"/>
+            <result property="description" column="module_description"/>
+            <result property="ownerId" column="module_owner_id"/>
+            <result property="enabled" column="module_enabled"/>
+            <result property="sortOrder" column="module_sort_order"/>
+        </association>
     </resultMap>
 
     <!-- 基础字段SQL片段 -->
     <sql id="ticketBaseColumns">
         t.id, t.title, t.content, t.ticket_no, t.priority, t.status, t.type,
-        t.workspace_id, t.creator_id, t.assignee_id, t.resolver_id,
+        t.workspace_id, t.creator_id, t.assignee_id, t.resolver_id, t.module_id,
         t.estimated_hours, t.actual_hours, t.due_date, t.resolved_at, t.closed_at,
         t.created_at, t.updated_at
     </sql>
@@ -70,7 +81,9 @@
         ws.id as ws_id, ws.name as ws_name, ws.code as ws_code, ws.color as ws_color,
         creator.username as creator_username, creator.real_name as creator_real_name, creator.avatar as creator_avatar,
         assignee.username as assignee_username, assignee.real_name as assignee_real_name, assignee.avatar as assignee_avatar,
-        resolver.username as resolver_username, resolver.real_name as resolver_real_name, resolver.avatar as resolver_avatar
+        resolver.username as resolver_username, resolver.real_name as resolver_real_name, resolver.avatar as resolver_avatar,
+        m.name as module_name, m.description as module_description, m.owner_id as module_owner_id, 
+        m.enabled as module_enabled, m.sort_order as module_sort_order
     </sql>
 
     <!-- 关联表JOIN片段 -->
@@ -79,6 +92,7 @@
         LEFT JOIN users creator ON t.creator_id = creator.id
         LEFT JOIN users assignee ON t.assignee_id = assignee.id
         LEFT JOIN users resolver ON t.resolver_id = resolver.id
+        LEFT JOIN modules m ON t.module_id = m.id
     </sql>
 
     <!-- 根据ID查找工单（包含关联信息） -->
@@ -190,10 +204,10 @@
     <insert id="insert" parameterType="com.syticket.entity.Ticket" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO tickets (
             title, content, ticket_no, priority, status, type, workspace_id, creator_id,
-            assignee_id, resolver_id, estimated_hours, actual_hours, due_date
+            assignee_id, resolver_id, module_id, estimated_hours, actual_hours, due_date
         ) VALUES (
             #{title}, #{content}, #{ticketNo}, #{priority}, #{status}, #{type}, #{workspaceId}, #{creatorId},
-            #{assigneeId}, #{resolverId}, #{estimatedHours}, #{actualHours}, #{dueDate}
+            #{assigneeId}, #{resolverId}, #{moduleId}, #{estimatedHours}, #{actualHours}, #{dueDate}
         )
     </insert>
 
@@ -208,6 +222,7 @@
             <if test="type != null">type = #{type},</if>
             <if test="assigneeId != null">assignee_id = #{assigneeId},</if>
             <if test="resolverId != null">resolver_id = #{resolverId},</if>
+            <if test="moduleId != null">module_id = #{moduleId},</if>
             <if test="estimatedHours != null">estimated_hours = #{estimatedHours},</if>
             <if test="actualHours != null">actual_hours = #{actualHours},</if>
             <if test="dueDate != null">due_date = #{dueDate},</if>
