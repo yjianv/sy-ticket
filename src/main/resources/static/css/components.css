@@ -58,7 +58,7 @@
   color: var(--status-open-text);
 }
 
-.status-in-progress {
+.status-in_progress {
   background-color: var(--status-in-progress-bg);
   color: var(--status-in-progress-text);
 }
