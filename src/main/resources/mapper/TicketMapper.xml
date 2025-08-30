@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syticket.mapper.TicketMapper">
+
+    <!-- 工单结果映射（包含关联对象） -->
+    <resultMap id="TicketWithRelationsResultMap" type="com.syticket.entity.Ticket">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="ticketNo" column="ticket_no"/>
+        <result property="priority" column="priority"/>
+        <result property="status" column="status"/>
+        <result property="type" column="type"/>
+        <result property="workspaceId" column="workspace_id"/>
+        <result property="creatorId" column="creator_id"/>
+        <result property="assigneeId" column="assignee_id"/>
+        <result property="resolverId" column="resolver_id"/>
+        <result property="estimatedHours" column="estimated_hours"/>
+        <result property="actualHours" column="actual_hours"/>
+        <result property="dueDate" column="due_date"/>
+        <result property="resolvedAt" column="resolved_at"/>
+        <result property="closedAt" column="closed_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        
+        <!-- 关联工作空间 -->
+        <association property="workspace" javaType="com.syticket.entity.Workspace">
+            <id property="id" column="ws_id"/>
+            <result property="name" column="ws_name"/>
+            <result property="code" column="ws_code"/>
+            <result property="color" column="ws_color"/>
+        </association>
+        
+        <!-- 关联创建人 -->
+        <association property="creator" javaType="com.syticket.entity.User">
+            <id property="id" column="creator_id"/>
+            <result property="username" column="creator_username"/>
+            <result property="realName" column="creator_real_name"/>
+            <result property="avatar" column="creator_avatar"/>
+        </association>
+        
+        <!-- 关联指派人 -->
+        <association property="assignee" javaType="com.syticket.entity.User">
+            <id property="id" column="assignee_id"/>
+            <result property="username" column="assignee_username"/>
+            <result property="realName" column="assignee_real_name"/>
+            <result property="avatar" column="assignee_avatar"/>
+        </association>
+        
+        <!-- 关联解决人 -->
+        <association property="resolver" javaType="com.syticket.entity.User">
+            <id property="id" column="resolver_id"/>
+            <result property="username" column="resolver_username"/>
+            <result property="realName" column="resolver_real_name"/>
+            <result property="avatar" column="resolver_avatar"/>
+        </association>
+    </resultMap>
+
+    <!-- 基础字段SQL片段 -->
+    <sql id="ticketBaseColumns">
+        t.id, t.title, t.content, t.ticket_no, t.priority, t.status, t.type,
+        t.workspace_id, t.creator_id, t.assignee_id, t.resolver_id,
+        t.estimated_hours, t.actual_hours, t.due_date, t.resolved_at, t.closed_at,
+        t.created_at, t.updated_at
+    </sql>
+
+    <!-- 关联字段SQL片段 -->
+    <sql id="ticketWithRelationsColumns">
+        <include refid="ticketBaseColumns"/>,
+        ws.id as ws_id, ws.name as ws_name, ws.code as ws_code, ws.color as ws_color,
+        creator.username as creator_username, creator.real_name as creator_real_name, creator.avatar as creator_avatar,
+        assignee.username as assignee_username, assignee.real_name as assignee_real_name, assignee.avatar as assignee_avatar,
+        resolver.username as resolver_username, resolver.real_name as resolver_real_name, resolver.avatar as resolver_avatar
+    </sql>
+
+    <!-- 关联表JOIN片段 -->
+    <sql id="ticketJoins">
+        LEFT JOIN workspaces ws ON t.workspace_id = ws.id
+        LEFT JOIN users creator ON t.creator_id = creator.id
+        LEFT JOIN users assignee ON t.assignee_id = assignee.id
+        LEFT JOIN users resolver ON t.resolver_id = resolver.id
+    </sql>
+
+    <!-- 根据ID查找工单（包含关联信息） -->
+    <select id="findByIdWithRelations" resultMap="TicketWithRelationsResultMap">
+        SELECT <include refid="ticketWithRelationsColumns"/>
+        FROM tickets t
+        <include refid="ticketJoins"/>
+        WHERE t.id = #{id}
+    </select>
+
+    <!-- 条件查询工单列表 -->
+    <select id="findWithConditions" resultMap="TicketWithRelationsResultMap">
+        SELECT <include refid="ticketWithRelationsColumns"/>
+        FROM tickets t
+        <include refid="ticketJoins"/>
+        <where>
+            <if test="params.workspaceId != null">
+                AND t.workspace_id = #{params.workspaceId}
+            </if>
+            <if test="params.status != null">
+                AND t.status = #{params.status}
+            </if>
+            <if test="params.priority != null">
+                AND t.priority = #{params.priority}
+            </if>
+            <if test="params.type != null">
+                AND t.type = #{params.type}
+            </if>
+            <if test="params.creatorId != null">
+                AND t.creator_id = #{params.creatorId}
+            </if>
+            <if test="params.assigneeId != null">
+                AND t.assignee_id = #{params.assigneeId}
+            </if>
+            <if test="params.keyword != null and params.keyword != ''">
+                AND (t.title LIKE CONCAT('%', #{params.keyword}, '%') 
+                     OR t.ticket_no LIKE CONCAT('%', #{params.keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY t.created_at DESC
+    </select>
+
+    <!-- 查询用户相关的工单 -->
+    <select id="findUserRelatedTickets" resultMap="TicketWithRelationsResultMap">
+        SELECT <include refid="ticketWithRelationsColumns"/>
+        FROM tickets t
+        <include refid="ticketJoins"/>
+        WHERE (t.creator_id = #{userId} OR t.assignee_id = #{userId})
+        <if test="workspaceId != null">
+            AND t.workspace_id = #{workspaceId}
+        </if>
+        ORDER BY t.created_at DESC
+    </select>
+
+    <!-- 统计工单数量 -->
+    <select id="countWithConditions" resultType="int">
+        SELECT COUNT(*)
+        FROM tickets t
+        <where>
+            <if test="params.workspaceId != null">
+                AND t.workspace_id = #{params.workspaceId}
+            </if>
+            <if test="params.status != null">
+                AND t.status = #{params.status}
+            </if>
+            <if test="params.priority != null">
+                AND t.priority = #{params.priority}
+            </if>
+            <if test="params.type != null">
+                AND t.type = #{params.type}
+            </if>
+            <if test="params.creatorId != null">
+                AND t.creator_id = #{params.creatorId}
+            </if>
+            <if test="params.assigneeId != null">
+                AND t.assignee_id = #{params.assigneeId}
+            </if>
+            <if test="params.keyword != null and params.keyword != ''">
+                AND (t.title LIKE CONCAT('%', #{params.keyword}, '%') 
+                     OR t.ticket_no LIKE CONCAT('%', #{params.keyword}, '%'))
+            </if>
+        </where>
+    </select>
+
+    <!-- 生成工单编号 -->
+    <select id="generateTicketNo" resultType="string">
+        SELECT CONCAT(#{workspaceCode}, '-', DATE_FORMAT(NOW(), '%Y%m%d'), '-', 
+                     LPAD(IFNULL(MAX(CAST(SUBSTRING(ticket_no, -4) AS UNSIGNED)), 0) + 1, 4, '0'))
+        FROM tickets 
+        WHERE ticket_no LIKE CONCAT(#{workspaceCode}, '-', DATE_FORMAT(NOW(), '%Y%m%d'), '-%')
+    </select>
+
+    <!-- 插入工单 -->
+    <insert id="insert" parameterType="com.syticket.entity.Ticket" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tickets (
+            title, content, ticket_no, priority, status, type, workspace_id, creator_id,
+            assignee_id, resolver_id, estimated_hours, actual_hours, due_date
+        ) VALUES (
+            #{title}, #{content}, #{ticketNo}, #{priority}, #{status}, #{type}, #{workspaceId}, #{creatorId},
+            #{assigneeId}, #{resolverId}, #{estimatedHours}, #{actualHours}, #{dueDate}
+        )
+    </insert>
+
+    <!-- 更新工单 -->
+    <update id="update" parameterType="com.syticket.entity.Ticket">
+        UPDATE tickets
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="priority != null">priority = #{priority},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="assigneeId != null">assignee_id = #{assigneeId},</if>
+            <if test="resolverId != null">resolver_id = #{resolverId},</if>
+            <if test="estimatedHours != null">estimated_hours = #{estimatedHours},</if>
+            <if test="actualHours != null">actual_hours = #{actualHours},</if>
+            <if test="dueDate != null">due_date = #{dueDate},</if>
+            <if test="resolvedAt != null">resolved_at = #{resolvedAt},</if>
+            <if test="closedAt != null">closed_at = #{closedAt},</if>
+            updated_at = CURRENT_TIMESTAMP
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 研发工单系统</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .login-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="login-bg min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div>
+            <div class="mx-auto h-20 w-20 flex items-center justify-center rounded-full bg-white shadow-lg">
+                <i class="fas fa-ticket-alt text-blue-600 text-3xl"></i>
+            </div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-white">
+                研发工单系统
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-200">
+                请登录您的账户
+            </p>
+        </div>
+        
+        <form class="mt-8 space-y-6" action="/login" method="POST">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            
+            <!-- 错误消息 -->
+            <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span th:text="${error}">错误消息</span>
+            </div>
+            
+            <!-- 成功消息 -->
+            <div th:if="${message}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span th:text="${message}">成功消息</span>
+            </div>
+            
+            <div class="rounded-md shadow-sm -space-y-px">
+                <div>
+                    <label for="username" class="sr-only">用户名</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-user text-gray-400"></i>
+                        </div>
+                        <input id="username" name="username" type="text" required 
+                               class="appearance-none rounded-none relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
+                               placeholder="用户名" autocomplete="username">
+                    </div>
+                </div>
+                <div>
+                    <label for="password" class="sr-only">密码</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input id="password" name="password" type="password" required 
+                               class="appearance-none rounded-none relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
+                               placeholder="密码" autocomplete="current-password">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input id="remember-me" name="remember-me" type="checkbox" 
+                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <label for="remember-me" class="ml-2 block text-sm text-gray-200">
+                        记住我
+                    </label>
+                </div>
+                
+                <div class="text-sm">
+                    <a href="#" class="font-medium text-blue-200 hover:text-blue-100">
+                        忘记密码？
+                    </a>
+                </div>
+            </div>
+            
+            <div>
+                <button type="submit" 
+                        class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                        <i class="fas fa-sign-in-alt text-blue-500 group-hover:text-blue-400"></i>
+                    </span>
+                    登录
+                </button>
+            </div>
+        </form>
+        
+        <div class="mt-6">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-transparent text-gray-200">系统提示</span>
+                </div>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <div class="text-sm text-gray-200">
+                    <p class="mb-2">默认管理员账户：</p>
+                    <p>用户名：<span class="font-mono bg-white bg-opacity-20 px-2 py-1 rounded">admin</span></p>
+                    <p>密码：<span class="font-mono bg-white bg-opacity-20 px-2 py-1 rounded">admin123</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center">
+            <p class="text-xs text-gray-300">
+                © 2024 研发工单系统. All rights reserved.
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // 自动聚焦到用户名输入框
+        document.getElementById('username').focus();
+        
+        // 表单提交时显示加载状态
+        document.querySelector('form').addEventListener('submit', function() {
+            const button = this.querySelector('button[type="submit"]');
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>登录中...';
+        });
+    </script>
+</body>
+</html>

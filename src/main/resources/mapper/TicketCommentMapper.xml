@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syticket.mapper.TicketCommentMapper">
+
+    <!-- 评论结果映射（包含用户信息） -->
+    <resultMap id="CommentWithUserResultMap" type="com.syticket.entity.TicketComment">
+        <id property="id" column="id"/>
+        <result property="ticketId" column="ticket_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="content" column="content"/>
+        <result property="type" column="type"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        
+        <!-- 关联用户 -->
+        <association property="user" javaType="com.syticket.entity.User">
+            <id property="id" column="user_id"/>
+            <result property="username" column="username"/>
+            <result property="realName" column="real_name"/>
+            <result property="avatar" column="avatar"/>
+        </association>
+    </resultMap>
+
+    <!-- 根据工单ID查找评论列表（包含用户信息） -->
+    <select id="findByTicketIdWithUser" resultMap="CommentWithUserResultMap">
+        SELECT tc.*, u.username, u.real_name, u.avatar
+        FROM ticket_comments tc
+        LEFT JOIN users u ON tc.user_id = u.id
+        WHERE tc.ticket_id = #{ticketId}
+        ORDER BY tc.created_at ASC
+    </select>
+
+    <!-- 插入评论 -->
+    <insert id="insert" parameterType="com.syticket.entity.TicketComment" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO ticket_comments (ticket_id, user_id, content, type)
+        VALUES (#{ticketId}, #{userId}, #{content}, #{type})
+    </insert>
+
+    <!-- 更新评论 -->
+    <update id="update" parameterType="com.syticket.entity.TicketComment">
+        UPDATE ticket_comments
+        <set>
+            <if test="content != null">content = #{content},</if>
+            updated_at = CURRENT_TIMESTAMP
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

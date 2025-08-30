@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syticket.mapper.FileMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="FileResultMap" type="com.syticket.entity.FileEntity">
+        <id property="id" column="id"/>
+        <result property="originalName" column="original_name"/>
+        <result property="storedName" column="stored_name"/>
+        <result property="filePath" column="file_path"/>
+        <result property="fileSize" column="file_size"/>
+        <result property="mimeType" column="mime_type"/>
+        <result property="fileHash" column="file_hash"/>
+        <result property="uploaderId" column="uploader_id"/>
+        <result property="relatedType" column="related_type"/>
+        <result property="relatedId" column="related_id"/>
+        <result property="createdAt" column="created_at"/>
+        
+        <!-- 关联上传者 -->
+        <association property="uploader" javaType="com.syticket.entity.User">
+            <id property="id" column="uploader_id"/>
+            <result property="username" column="uploader_username"/>
+            <result property="realName" column="uploader_real_name"/>
+        </association>
+    </resultMap>
+
+    <!-- 根据关联类型和ID查找文件 -->
+    <select id="findByRelated" resultMap="FileResultMap">
+        SELECT f.*, u.username as uploader_username, u.real_name as uploader_real_name
+        FROM files f
+        LEFT JOIN users u ON f.uploader_id = u.id
+        WHERE f.related_type = #{relatedType} AND f.related_id = #{relatedId}
+        ORDER BY f.created_at DESC
+    </select>
+
+    <!-- 插入文件记录 -->
+    <insert id="insert" parameterType="com.syticket.entity.FileEntity" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO files (
+            original_name, stored_name, file_path, file_size, mime_type, file_hash,
+            uploader_id, related_type, related_id
+        ) VALUES (
+            #{originalName}, #{storedName}, #{filePath}, #{fileSize}, #{mimeType}, #{fileHash},
+            #{uploaderId}, #{relatedType}, #{relatedId}
+        )
+    </insert>
+
+    <!-- 更新文件记录 -->
+    <update id="update" parameterType="com.syticket.entity.FileEntity">
+        UPDATE files
+        <set>
+            <if test="originalName != null">original_name = #{originalName},</if>
+            <if test="storedName != null">stored_name = #{storedName},</if>
+            <if test="filePath != null">file_path = #{filePath},</if>
+            <if test="fileSize != null">file_size = #{fileSize},</if>
+            <if test="mimeType != null">mime_type = #{mimeType},</if>
+            <if test="fileHash != null">file_hash = #{fileHash},</if>
+            <if test="relatedType != null">related_type = #{relatedType},</if>
+            <if test="relatedId != null">related_id = #{relatedId},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,74 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: sy-ticket
+  
+  # 数据库配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/sy_ticket?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
+    username: root
+#    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    
+  # Flyway配置
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
+    
+  # Thymeleaf配置
+  thymeleaf:
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    
+  # 文件上传配置
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+
+# MyBatis配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.syticket.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 分页配置
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+
+# MinIO配置
+minio:
+  endpoint: http://192.168.50.147:9000
+  access-key: Dxc71L6Uiqd41AwuO3UE
+  secret-key: 9wmOSsTi4GDCdTTlGBznrMyLoILPANGsYK5zJ5Su
+  bucket-name: sy-ticket
+
+# 企业微信配置
+wechat:
+  webhook-url: https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=6c26fe37-1ddb-4b98-a853-b687228326d5
+
+# 应用配置
+app:
+  upload-path: /tmp/sy-ticket/uploads/
+  
+# 日志配置
+logging:
+  level:
+    com.syticket: DEBUG
+    org.springframework.security: DEBUG
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统错误 - 研发工单系统</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full">
+        <div class="text-center">
+            <!-- 错误图标 -->
+            <div class="mx-auto h-24 w-24 text-red-500 mb-6">
+                <i class="fas fa-exclamation-triangle text-6xl"></i>
+            </div>
+            
+            <!-- 错误标题 -->
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">系统错误</h1>
+            
+            <!-- 错误信息 -->
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <div class="text-sm text-red-800">
+                    <p class="font-medium mb-2">抱歉，系统遇到了一个错误</p>
+                    
+                    <!-- 错误状态码 -->
+                    <div th:if="${status}">
+                        <span class="font-mono bg-red-100 px-2 py-1 rounded">错误代码：<span th:text="${status}">500</span></span>
+                    </div>
+                    
+                    <!-- 错误消息 -->
+                    <div th:if="${error}" class="mt-2">
+                        <p th:text="${error}">Internal Server Error</p>
+                    </div>
+                    
+                    <!-- 详细错误信息（仅开发环境显示） -->
+                    <div th:if="${message}" class="mt-2 text-xs">
+                        <details>
+                            <summary class="cursor-pointer hover:text-red-600">查看详细信息</summary>
+                            <pre class="mt-2 text-left whitespace-pre-wrap" th:text="${message}">错误详情</pre>
+                        </details>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 操作按钮 -->
+            <div class="space-y-3">
+                <button onclick="history.back()" 
+                        class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-150 ease-in-out">
+                    <i class="fas fa-arrow-left mr-2"></i>返回上一页
+                </button>
+                
+                <a href="/" 
+                   class="block w-full bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition duration-150 ease-in-out">
+                    <i class="fas fa-home mr-2"></i>返回首页
+                </a>
+                
+                <button onclick="location.reload()" 
+                        class="w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-150 ease-in-out">
+                    <i class="fas fa-redo mr-2"></i>刷新页面
+                </button>
+            </div>
+            
+            <!-- 联系信息 -->
+            <div class="mt-8 text-center">
+                <p class="text-sm text-gray-500">
+                    如果问题持续存在，请联系系统管理员
+                </p>
+                <p class="text-xs text-gray-400 mt-2">
+                    错误时间：<span th:text="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd HH:mm:ss')}">2024-01-01 12:00:00</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 5秒后显示自动刷新提示
+        setTimeout(function() {
+            const refreshBtn = document.querySelector('button[onclick="location.reload()"]');
+            if (refreshBtn) {
+                refreshBtn.innerHTML = '<i class="fas fa-redo mr-2"></i>刷新页面（建议尝试）';
+                refreshBtn.classList.add('animate-pulse');
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

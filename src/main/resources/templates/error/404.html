@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面未找到 - 研发工单系统</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .floating-animation {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center">
+    <div class="max-w-lg w-full px-6">
+        <div class="text-center">
+            <!-- 404 图标 -->
+            <div class="mx-auto h-32 w-32 text-blue-500 mb-8 floating-animation">
+                <i class="fas fa-search text-8xl"></i>
+            </div>
+            
+            <!-- 404 标题 -->
+            <div class="mb-8">
+                <h1 class="text-6xl font-bold text-gray-800 mb-2">404</h1>
+                <h2 class="text-2xl font-semibold text-gray-600 mb-4">页面未找到</h2>
+                <p class="text-gray-500 text-lg">
+                    抱歉，您访问的页面似乎不存在或已被移动
+                </p>
+            </div>
+            
+            <!-- 可能的原因 -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8 text-left">
+                <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                    可能的原因：
+                </h3>
+                <ul class="space-y-2 text-gray-600">
+                    <li class="flex items-start">
+                        <i class="fas fa-circle text-xs text-gray-400 mt-2 mr-3"></i>
+                        <span>URL地址输入错误</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-circle text-xs text-gray-400 mt-2 mr-3"></i>
+                        <span>页面已被删除或移动</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-circle text-xs text-gray-400 mt-2 mr-3"></i>
+                        <span>链接已过期或无效</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-circle text-xs text-gray-400 mt-2 mr-3"></i>
+                        <span>您没有访问权限</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- 操作按钮 -->
+            <div class="space-y-4">
+                <a href="/" 
+                   class="block w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-150 ease-in-out transform hover:scale-105">
+                    <i class="fas fa-home mr-2"></i>返回首页
+                </a>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="history.back()" 
+                            class="bg-gray-600 text-white px-4 py-3 rounded-lg hover:bg-gray-700 transition duration-150 ease-in-out">
+                        <i class="fas fa-arrow-left mr-2"></i>返回上页
+                    </button>
+                    
+                    <a href="/tickets" 
+                       class="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition duration-150 ease-in-out text-center">
+                        <i class="fas fa-ticket-alt mr-2"></i>查看工单
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 搜索建议 -->
+            <div class="mt-8 bg-gray-50 rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center justify-center">
+                    <i class="fas fa-compass text-blue-500 mr-2"></i>
+                    您可能在寻找：
+                </h3>
+                <div class="grid grid-cols-2 gap-3 text-sm">
+                    <a href="/" class="flex items-center p-3 bg-white rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out">
+                        <i class="fas fa-tachometer-alt text-blue-500 mr-2"></i>
+                        <span>仪表盘</span>
+                    </a>
+                    <a href="/tickets" class="flex items-center p-3 bg-white rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out">
+                        <i class="fas fa-list text-green-500 mr-2"></i>
+                        <span>工单列表</span>
+                    </a>
+                    <a href="/tickets/create" class="flex items-center p-3 bg-white rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out">
+                        <i class="fas fa-plus text-purple-500 mr-2"></i>
+                        <span>创建工单</span>
+                    </a>
+                    <a href="/reports" class="flex items-center p-3 bg-white rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out">
+                        <i class="fas fa-chart-bar text-orange-500 mr-2"></i>
+                        <span>统计报表</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 底部信息 -->
+            <div class="mt-8 text-center">
+                <p class="text-sm text-gray-500">
+                    如果您认为这是一个错误，请联系系统管理员
+                </p>
+                <p class="text-xs text-gray-400 mt-2">
+                    错误代码：404 | 时间：<span th:text="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd HH:mm:ss')}">2024-01-01 12:00:00</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 添加一些交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为按钮添加点击效果
+            const buttons = document.querySelectorAll('button, a[href]');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+            
+            // 添加键盘快捷键
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    window.location.href = '/';
+                } else if (e.key === 'Escape') {
+                    history.back();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

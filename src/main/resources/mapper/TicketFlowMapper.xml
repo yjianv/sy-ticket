@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syticket.mapper.TicketFlowMapper">
+
+    <!-- 流转记录结果映射（包含用户信息） -->
+    <resultMap id="FlowWithUserResultMap" type="com.syticket.entity.TicketFlow">
+        <id property="id" column="id"/>
+        <result property="ticketId" column="ticket_id"/>
+        <result property="fromUserId" column="from_user_id"/>
+        <result property="toUserId" column="to_user_id"/>
+        <result property="fromStatus" column="from_status"/>
+        <result property="toStatus" column="to_status"/>
+        <result property="action" column="action"/>
+        <result property="reason" column="reason"/>
+        <result property="createdAt" column="created_at"/>
+        
+        <!-- 关联发起人 -->
+        <association property="fromUser" javaType="com.syticket.entity.User">
+            <id property="id" column="from_user_id"/>
+            <result property="username" column="from_username"/>
+            <result property="realName" column="from_real_name"/>
+            <result property="avatar" column="from_avatar"/>
+        </association>
+        
+        <!-- 关联接收人 -->
+        <association property="toUser" javaType="com.syticket.entity.User">
+            <id property="id" column="to_user_id"/>
+            <result property="username" column="to_username"/>
+            <result property="realName" column="to_real_name"/>
+            <result property="avatar" column="to_avatar"/>
+        </association>
+    </resultMap>
+
+    <!-- 根据工单ID查找流转记录列表（包含用户信息） -->
+    <select id="findByTicketIdWithUser" resultMap="FlowWithUserResultMap">
+        SELECT tf.*,
+               fu.username as from_username, fu.real_name as from_real_name, fu.avatar as from_avatar,
+               tu.username as to_username, tu.real_name as to_real_name, tu.avatar as to_avatar
+        FROM ticket_flows tf
+        LEFT JOIN users fu ON tf.from_user_id = fu.id
+        LEFT JOIN users tu ON tf.to_user_id = tu.id
+        WHERE tf.ticket_id = #{ticketId}
+        ORDER BY tf.created_at DESC
+    </select>
+
+    <!-- 根据用户查找相关的流转记录 -->
+    <select id="findByUserId" resultMap="FlowWithUserResultMap">
+        SELECT tf.*,
+               fu.username as from_username, fu.real_name as from_real_name, fu.avatar as from_avatar,
+               tu.username as to_username, tu.real_name as to_real_name, tu.avatar as to_avatar
+        FROM ticket_flows tf
+        LEFT JOIN users fu ON tf.from_user_id = fu.id
+        LEFT JOIN users tu ON tf.to_user_id = tu.id
+        WHERE tf.from_user_id = #{userId} OR tf.to_user_id = #{userId}
+        ORDER BY tf.created_at DESC
+    </select>
+
+    <!-- 插入流转记录 -->
+    <insert id="insert" parameterType="com.syticket.entity.TicketFlow" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO ticket_flows (ticket_id, from_user_id, to_user_id, from_status, to_status, action, reason)
+        VALUES (#{ticketId}, #{fromUserId}, #{toUserId}, #{fromStatus}, #{toStatus}, #{action}, #{reason})
+    </insert>
+
+</mapper>

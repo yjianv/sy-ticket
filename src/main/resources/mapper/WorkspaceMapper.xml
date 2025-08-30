@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syticket.mapper.WorkspaceMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="WorkspaceResultMap" type="com.syticket.entity.Workspace">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="description" column="description"/>
+        <result property="color" column="color"/>
+        <result property="enabled" column="enabled"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 插入工作空间 -->
+    <insert id="insert" parameterType="com.syticket.entity.Workspace" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO workspaces (name, code, description, color, enabled)
+        VALUES (#{name}, #{code}, #{description}, #{color}, #{enabled})
+    </insert>
+
+    <!-- 更新工作空间 -->
+    <update id="update" parameterType="com.syticket.entity.Workspace">
+        UPDATE workspaces
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="color != null">color = #{color},</if>
+            <if test="enabled != null">enabled = #{enabled},</if>
+            updated_at = CURRENT_TIMESTAMP
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

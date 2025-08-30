@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">仪表盘</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- 页面标题 -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">仪表盘</h1>
+            <p class="text-gray-600" th:if="${currentWorkspace != null}">
+                当前工作空间：
+                <span class="workspace-badge" th:style="'background-color: ' + ${currentWorkspace.color}" th:text="${currentWorkspace.name}">工作空间</span>
+            </p>
+        </div>
+        
+        <!-- 统计卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" th:if="${currentWorkspace != null}">
+            <!-- 待处理工单 -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-clock text-white text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">待处理</dt>
+                                <dd class="flex items-baseline">
+                                    <div class="text-2xl font-semibold text-gray-900" th:text="${openCount ?: 0}">0</div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-5 py-3">
+                    <div class="text-sm">
+                        <a href="/tickets?status=OPEN" class="font-medium text-blue-700 hover:text-blue-900">查看详情</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 处理中工单 -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-play text-white text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">处理中</dt>
+                                <dd class="flex items-baseline">
+                                    <div class="text-2xl font-semibold text-gray-900" th:text="${inProgressCount ?: 0}">0</div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-5 py-3">
+                    <div class="text-sm">
+                        <a href="/tickets?status=IN_PROGRESS" class="font-medium text-yellow-700 hover:text-yellow-900">查看详情</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 已解决工单 -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-check text-white text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">已解决</dt>
+                                <dd class="flex items-baseline">
+                                    <div class="text-2xl font-semibold text-gray-900" th:text="${resolvedCount ?: 0}">0</div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-5 py-3">
+                    <div class="text-sm">
+                        <a href="/tickets?status=RESOLVED" class="font-medium text-green-700 hover:text-green-900">查看详情</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 已关闭工单 -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-archive text-white text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">已关闭</dt>
+                                <dd class="flex items-baseline">
+                                    <div class="text-2xl font-semibold text-gray-900" th:text="${closedCount ?: 0}">0</div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-5 py-3">
+                    <div class="text-sm">
+                        <a href="/tickets?status=CLOSED" class="font-medium text-gray-700 hover:text-gray-900">查看详情</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 快速操作 -->
+        <div class="bg-white shadow rounded-lg mb-8">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">快速操作</h3>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <a href="/tickets/create" class="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition duration-150 ease-in-out">
+                        <div class="flex-shrink-0">
+                            <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-plus text-white"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-blue-900">创建工单</p>
+                            <p class="text-sm text-blue-700">新建一个工单</p>
+                        </div>
+                    </a>
+                    
+                    <a href="/tickets" class="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition duration-150 ease-in-out">
+                        <div class="flex-shrink-0">
+                            <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-list text-white"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-green-900">工单列表</p>
+                            <p class="text-sm text-green-700">查看所有工单</p>
+                        </div>
+                    </a>
+                    
+                    <a href="/reports" class="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition duration-150 ease-in-out">
+                        <div class="flex-shrink-0">
+                            <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-chart-bar text-white"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-purple-900">统计报表</p>
+                            <p class="text-sm text-purple-700">查看数据统计</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 我的工单 -->
+        <div class="bg-white shadow rounded-lg" th:if="${userTickets != null and !userTickets.isEmpty()}">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">我相关的工单</h3>
+                <p class="mt-1 text-sm text-gray-500">包括我创建的和指派给我的工单</p>
+            </div>
+            <div class="overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">工单</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">优先级</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">创建时间</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr th:each="ticket : ${userTickets}">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900" th:text="${ticket.ticketNo}">工单编号</div>
+                                    <div class="text-sm text-gray-500" th:text="${#strings.abbreviate(ticket.title, 50)}">工单标题</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full workspace-badge"
+                                      th:classappend="'status-' + ${#strings.toLowerCase(ticket.status)}"
+                                      th:text="${ticket.status.description}">状态</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full workspace-badge"
+                                      th:classappend="'priority-' + ${#strings.toLowerCase(ticket.priority)}"
+                                      th:text="${ticket.priority.description}">优先级</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <span th:text="${#temporals.format(ticket.createdAt, 'yyyy-MM-dd HH:mm')}">创建时间</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a th:href="@{/tickets/{id}(id=${ticket.id})}" class="text-blue-600 hover:text-blue-900">查看</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="px-6 py-3 border-t border-gray-200">
+                    <a href="/tickets" class="text-sm text-blue-600 hover:text-blue-900">查看更多工单 →</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 空状态提示 -->
+        <div class="text-center py-12" th:if="${currentWorkspace == null}">
+            <div class="mx-auto h-24 w-24 text-gray-400">
+                <i class="fas fa-exclamation-triangle text-6xl"></i>
+            </div>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">没有可用的工作空间</h3>
+            <p class="mt-1 text-sm text-gray-500">请联系管理员创建工作空间。</p>
+        </div>
+    </div>
+</body>
+</html>

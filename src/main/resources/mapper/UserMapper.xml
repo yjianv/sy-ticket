@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syticket.mapper.UserMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="UserResultMap" type="com.syticket.entity.User">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="realName" column="real_name"/>
+        <result property="avatar" column="avatar"/>
+        <result property="phone" column="phone"/>
+        <result property="enabled" column="enabled"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 插入用户 -->
+    <insert id="insert" parameterType="com.syticket.entity.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users (username, password, email, real_name, avatar, phone, enabled)
+        VALUES (#{username}, #{password}, #{email}, #{realName}, #{avatar}, #{phone}, #{enabled})
+    </insert>
+
+    <!-- 更新用户 -->
+    <update id="update" parameterType="com.syticket.entity.User">
+        UPDATE users
+        <set>
+            <if test="password != null">password = #{password},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="realName != null">real_name = #{realName},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="enabled != null">enabled = #{enabled},</if>
+            updated_at = CURRENT_TIMESTAMP
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

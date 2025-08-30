@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">创建工单</title>
+</head>
+
+<th:block layout:fragment="custom-head">
+    <!-- Editor.js CSS -->
+    <style>
+        .codex-editor__redactor {
+            padding-bottom: 0 !important;
+        }
+        
+        .ce-block__content {
+            max-width: none;
+        }
+        
+        .ce-toolbar__content {
+            max-width: none;
+        }
+        
+        .drag-drop-area {
+            border: 2px dashed #cbd5e0;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: #f7fafc;
+        }
+        
+        .drag-drop-area.drag-over {
+            border-color: #3182ce;
+            background-color: #ebf8ff;
+        }
+        
+        .file-preview {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 0.375rem;
+        }
+    </style>
+</th:block>
+
+<body>
+    <div layout:fragment="content">
+        <!-- 页面标题 -->
+        <div class="mb-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">创建工单</h1>
+                    <p class="text-gray-600">填写工单信息并提交</p>
+                </div>
+                <a href="/tickets" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-150 ease-in-out">
+                    <i class="fas fa-arrow-left mr-2"></i>返回列表
+                </a>
+            </div>
+        </div>
+        
+        <!-- 表单 -->
+        <div class="bg-white shadow rounded-lg">
+            <form id="ticket-form" action="/tickets/create" method="POST" class="p-6 space-y-6">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <input type="hidden" id="content-input" name="content" value=""/>
+                
+                <!-- 基本信息 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- 工单标题 -->
+                    <div class="lg:col-span-2">
+                        <label for="title" class="block text-sm font-medium text-gray-700 mb-2">工单标题 *</label>
+                        <input type="text" id="title" name="title" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="请输入工单标题">
+                    </div>
+                    
+                    <!-- 工作空间 -->
+                    <div>
+                        <label for="workspaceId" class="block text-sm font-medium text-gray-700 mb-2">工作空间 *</label>
+                        <select id="workspaceId" name="workspaceId" required 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">请选择工作空间</option>
+                            <option th:each="workspace : ${workspaces}" 
+                                    th:value="${workspace.id}" 
+                                    th:text="${workspace.name}"
+                                    th:selected="${defaultWorkspaceId != null and workspace.id == defaultWorkspaceId}">
+                                工作空间
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <!-- 优先级 -->
+                    <div>
+                        <label for="priority" class="block text-sm font-medium text-gray-700 mb-2">优先级 *</label>
+                        <select id="priority" name="priority" required 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <option th:each="priority : ${priorities}" 
+                                    th:value="${priority.name()}" 
+                                    th:text="${priority.description}"
+                                    th:selected="${priority.name() == 'MEDIUM'}">
+                                优先级
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <!-- 工单类型 -->
+                    <div>
+                        <label for="type" class="block text-sm font-medium text-gray-700 mb-2">工单类型 *</label>
+                        <select id="type" name="type" required 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <option th:each="type : ${types}" 
+                                    th:value="${type.name()}" 
+                                    th:text="${type.description}">
+                                类型
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <!-- 指派给 -->
+                    <div>
+                        <label for="assigneeId" class="block text-sm font-medium text-gray-700 mb-2">指派给</label>
+                        <select id="assigneeId" name="assigneeId" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">暂不指派</option>
+                            <option th:each="user : ${users}" 
+                                    th:value="${user.id}" 
+                                    th:text="${user.realName} + ' (' + ${user.username} + ')'">
+                                用户
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <!-- 预估工时 -->
+                    <div>
+                        <label for="estimatedHours" class="block text-sm font-medium text-gray-700 mb-2">预估工时（小时）</label>
+                        <input type="number" id="estimatedHours" name="estimatedHours" min="0" step="0.5"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="例如：8">
+                    </div>
+                    
+                    <!-- 截止日期 -->
+                    <div>
+                        <label for="dueDate" class="block text-sm font-medium text-gray-700 mb-2">截止日期</label>
+                        <input type="datetime-local" id="dueDate" name="dueDate"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+                
+                <!-- 工单内容 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">工单描述 *</label>
+                    <div class="border border-gray-300 rounded-lg">
+                        <div id="editor" class="min-h-[300px]"></div>
+                    </div>
+                    <p class="mt-2 text-sm text-gray-500">支持富文本编辑，可以直接粘贴或拖拽图片</p>
+                </div>
+                
+                <!-- 文件附件 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">附件上传</label>
+                    <div class="drag-drop-area" id="file-drop-area">
+                        <div class="flex flex-col items-center">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-lg font-medium text-gray-700">拖拽文件到这里上传</p>
+                            <p class="text-sm text-gray-500 mt-2">或者 
+                                <button type="button" id="file-select-btn" class="text-blue-600 hover:text-blue-800 underline">点击选择文件</button>
+                            </p>
+                            <input type="file" id="file-input" multiple class="hidden" accept="*/*">
+                        </div>
+                    </div>
+                    
+                    <!-- 文件列表 -->
+                    <div id="file-list" class="mt-4 space-y-2"></div>
+                </div>
+                
+                <!-- 提交按钮 -->
+                <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                    <button type="button" onclick="history.back()" 
+                            class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-150 ease-in-out">
+                        取消
+                    </button>
+                    <button type="submit" id="submit-btn"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 ease-in-out">
+                        <i class="fas fa-save mr-2"></i>创建工单
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+<th:block layout:fragment="custom-script">
+    <!-- Editor.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/paragraph@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/image@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@latest"></script>
+    
+    <script>
+        let editor;
+        let uploadedFiles = [];
+        
+        $(document).ready(function() {
+            // 初始化Editor.js
+            initEditor();
+            
+            // 文件上传相关事件
+            initFileUpload();
+            
+            // 表单提交处理
+            $('#ticket-form').on('submit', function(e) {
+                e.preventDefault();
+                submitForm();
+            });
+        });
+        
+        // 初始化编辑器
+        function initEditor() {
+            editor = new EditorJS({
+                holder: 'editor',
+                placeholder: '请描述您的问题或需求...',
+                tools: {
+                    header: {
+                        class: Header,
+                        config: {
+                            placeholder: '标题...',
+                            levels: [2, 3, 4],
+                            defaultLevel: 3
+                        }
+                    },
+                    list: {
+                        class: List,
+                        inlineToolbar: true,
+                        config: {
+                            defaultStyle: 'unordered'
+                        }
+                    },
+                    checklist: {
+                        class: Checklist,
+                        inlineToolbar: true,
+                    },
+                    quote: {
+                        class: Quote,
+                        inlineToolbar: true,
+                        shortcut: 'CMD+SHIFT+O',
+                        config: {
+                            quotePlaceholder: '引用内容',
+                            captionPlaceholder: '引用来源',
+                        },
+                    },
+                    code: {
+                        class: CodeTool,
+                        config: {
+                            placeholder: '输入代码...'
+                        }
+                    },
+                    delimiter: Delimiter,
+                    image: {
+                        class: ImageTool,
+                        config: {
+                            endpoints: {
+                                byFile: '/api/files/upload/image',
+                            },
+                            field: 'image',
+                            types: 'image/*',
+                            additionalRequestHeaders: {
+                                'X-CSRF-TOKEN': $('input[name="_csrf"]').val()
+                            }
+                        }
+                    }
+                },
+                data: {
+                    blocks: [
+                        {
+                            type: 'paragraph',
+                            data: {
+                                text: ''
+                            }
+                        }
+                    ]
+                }
+            });
+        }
+        
+        // 初始化文件上传
+        function initFileUpload() {
+            const dropArea = $('#file-drop-area');
+            const fileInput = $('#file-input');
+            const fileSelectBtn = $('#file-select-btn');
+            
+            // 文件选择按钮
+            fileSelectBtn.on('click', function() {
+                fileInput.click();
+            });
+            
+            // 文件输入变化
+            fileInput.on('change', function() {
+                handleFiles(this.files);
+            });
+            
+            // 拖拽事件
+            dropArea.on('dragover', function(e) {
+                e.preventDefault();
+                $(this).addClass('drag-over');
+            });
+            
+            dropArea.on('dragleave', function(e) {
+                e.preventDefault();
+                $(this).removeClass('drag-over');
+            });
+            
+            dropArea.on('drop', function(e) {
+                e.preventDefault();
+                $(this).removeClass('drag-over');
+                const files = e.originalEvent.dataTransfer.files;
+                handleFiles(files);
+            });
+        }
+        
+        // 处理文件上传
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                uploadFile(file);
+            });
+        }
+        
+        // 上传单个文件
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('relatedType', 'TICKET');
+            formData.append('_csrf', $('input[name="_csrf"]').val());
+            
+            const fileItem = createFileItem(file);
+            $('#file-list').append(fileItem);
+            
+            $.ajax({
+                url: '/api/files/upload',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        uploadedFiles.push(response.data);
+                        fileItem.find('.file-status').html('<i class="fas fa-check-circle text-green-500"></i>');
+                        fileItem.find('.file-progress').hide();
+                    } else {
+                        fileItem.find('.file-status').html('<i class="fas fa-exclamation-circle text-red-500"></i>');
+                        fileItem.find('.file-name').addClass('text-red-500');
+                        AppUtils.showError('文件上传失败: ' + response.message);
+                    }
+                },
+                error: function() {
+                    fileItem.find('.file-status').html('<i class="fas fa-exclamation-circle text-red-500"></i>');
+                    fileItem.find('.file-name').addClass('text-red-500');
+                    AppUtils.showError('文件上传失败');
+                }
+            });
+        }
+        
+        // 创建文件显示项
+        function createFileItem(file) {
+            const isImage = file.type.startsWith('image/');
+            const fileSize = formatFileSize(file.size);
+            
+            const html = `
+                <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                    <div class="flex-shrink-0 mr-3">
+                        ${isImage ? 
+                            '<i class="fas fa-image text-blue-500"></i>' : 
+                            '<i class="fas fa-file text-gray-500"></i>'
+                        }
+                    </div>
+                    <div class="flex-grow">
+                        <div class="file-name text-sm font-medium text-gray-900">${file.name}</div>
+                        <div class="text-xs text-gray-500">${fileSize}</div>
+                        <div class="file-progress w-full bg-gray-200 rounded-full h-1 mt-1">
+                            <div class="bg-blue-600 h-1 rounded-full animate-pulse" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="file-status ml-3">
+                        <i class="fas fa-spinner fa-spin text-blue-500"></i>
+                    </div>
+                </div>
+            `;
+            
+            return $(html);
+        }
+        
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // 提交表单
+        async function submitForm() {
+            try {
+                // 获取编辑器内容
+                const editorData = await editor.save();
+                $('#content-input').val(JSON.stringify(editorData));
+                
+                // 验证必填字段
+                const title = $('#title').val().trim();
+                const workspaceId = $('#workspaceId').val();
+                const priority = $('#priority').val();
+                const type = $('#type').val();
+                
+                if (!title) {
+                    AppUtils.showError('请输入工单标题');
+                    return;
+                }
+                
+                if (!workspaceId) {
+                    AppUtils.showError('请选择工作空间');
+                    return;
+                }
+                
+                if (!priority) {
+                    AppUtils.showError('请选择优先级');
+                    return;
+                }
+                
+                if (!type) {
+                    AppUtils.showError('请选择工单类型');
+                    return;
+                }
+                
+                if (!editorData.blocks || editorData.blocks.length === 0) {
+                    AppUtils.showError('请输入工单描述');
+                    return;
+                }
+                
+                // 禁用提交按钮
+                const submitBtn = $('#submit-btn');
+                submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>创建中...');
+                
+                // 提交表单
+                $('#ticket-form')[0].submit();
+                
+            } catch (error) {
+                console.error('保存失败:', error);
+                AppUtils.showError('保存编辑器内容失败');
+                $('#submit-btn').prop('disabled', false).html('<i class="fas fa-save mr-2"></i>创建工单');
+            }
+        }
+    </script>
+</th:block>
+</html>
