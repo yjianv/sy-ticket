@@ -1,0 +1,729 @@
+/**
+ * 页面特定样式 - 各个页面的专用样式
+ * Page Specific Styles - Specific styles for individual pages
+ */
+
+/* ===== 登录页面样式 Login Page Styles ===== */
+
+.login-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-4);
+}
+
+.login-container {
+  max-width: 28rem;
+  width: 100%;
+}
+
+.login-logo {
+  margin: 0 auto;
+  height: 5rem;
+  width: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.login-title {
+  margin-top: var(--space-6);
+  text-align: center;
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: white;
+}
+
+.login-subtitle {
+  margin-top: var(--space-2);
+  text-align: center;
+  font-size: var(--text-sm);
+  color: rgb(229, 231, 235);
+}
+
+.login-form {
+  margin-top: var(--space-8);
+}
+
+.login-input-group {
+  position: relative;
+}
+
+.login-input-icon {
+  position: absolute;
+  top: 50%;
+  left: var(--space-3);
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.login-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-3) var(--space-3) 2.5rem;
+  border: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  transition: all var(--transition-fast);
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.login-input:first-child {
+  border-top-left-radius: var(--radius-md);
+  border-top-right-radius: var(--radius-md);
+  border-bottom: 0;
+}
+
+.login-input:last-child {
+  border-bottom-left-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+}
+
+.login-remember {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: var(--space-6) 0;
+}
+
+.login-checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.login-checkbox {
+  height: 1rem;
+  width: 1rem;
+  color: var(--color-primary-600);
+  border-color: var(--color-border);
+  border-radius: var(--radius-base);
+}
+
+.login-checkbox:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.login-checkbox-label {
+  margin-left: var(--space-2);
+  font-size: var(--text-sm);
+  color: rgb(229, 231, 235);
+}
+
+.login-forgot-link {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: rgb(191, 219, 254);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.login-forgot-link:hover {
+  color: rgb(147, 197, 253);
+}
+
+.login-submit-btn {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid transparent;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  border-radius: var(--radius-md);
+  color: white;
+  background-color: var(--color-primary-600);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.login-submit-btn:hover {
+  background-color: var(--color-primary-700);
+}
+
+.login-submit-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.login-submit-icon {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  padding-left: var(--space-3);
+  color: var(--color-primary-500);
+  transition: color var(--transition-fast);
+}
+
+.login-submit-btn:hover .login-submit-icon {
+  color: var(--color-primary-400);
+}
+
+.login-divider {
+  margin-top: var(--space-6);
+  position: relative;
+}
+
+.login-divider-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: var(--color-border);
+}
+
+.login-divider-text {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  font-size: var(--text-sm);
+  color: rgb(229, 231, 235);
+  background: transparent;
+  padding: 0 var(--space-2);
+}
+
+.login-info {
+  margin-top: var(--space-6);
+  text-align: center;
+  font-size: var(--text-sm);
+  color: rgb(229, 231, 235);
+}
+
+.login-info-credential {
+  font-family: var(--font-mono);
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-base);
+  margin: 0 var(--space-1);
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: var(--space-6);
+  font-size: var(--text-xs);
+  color: rgb(209, 213, 219);
+}
+
+/* ===== Editor.js 样式 Editor.js Styles ===== */
+
+.editor-container {
+  min-height: 300px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+}
+
+.codex-editor__redactor {
+  padding-bottom: 0 !important;
+}
+
+.ce-block__content {
+  max-width: none;
+}
+
+.ce-toolbar__content {
+  max-width: none;
+}
+
+/* 只读编辑器样式 */
+.readonly-editor .codex-editor__redactor {
+  padding: var(--space-4);
+  background-color: var(--color-surface-secondary);
+  border-radius: var(--radius-md);
+}
+
+.readonly-editor .ce-block__content {
+  max-width: none;
+}
+
+.readonly-editor .ce-toolbar {
+  display: none !important;
+}
+
+/* ===== 文件上传组件样式 File Upload Styles ===== */
+
+.drag-drop-area {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-8);
+  text-align: center;
+  transition: all var(--transition-base);
+  background-color: var(--color-surface-secondary);
+  cursor: pointer;
+}
+
+.drag-drop-area.drag-over {
+  border-color: var(--color-primary-400);
+  background-color: var(--color-primary-50);
+}
+
+.drag-drop-area:hover {
+  border-color: var(--color-primary-300);
+  background-color: var(--color-primary-25);
+}
+
+.drag-drop-icon {
+  font-size: 2.5rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.drag-drop-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.drag-drop-subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.drag-drop-link {
+  color: var(--color-primary-600);
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.drag-drop-link:hover {
+  color: var(--color-primary-700);
+}
+
+.file-list {
+  margin-top: var(--space-4);
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  padding: var(--space-3);
+  background-color: var(--color-surface-secondary);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-2);
+}
+
+.file-item:last-child {
+  margin-bottom: 0;
+}
+
+.file-icon {
+  flex-shrink: 0;
+  margin-right: var(--space-3);
+  font-size: var(--text-lg);
+}
+
+.file-info {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.file-name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-size {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.file-progress {
+  width: 100%;
+  height: 0.25rem;
+  background-color: var(--color-gray-200);
+  border-radius: var(--radius-full);
+  margin-top: var(--space-1);
+  overflow: hidden;
+}
+
+.file-progress-bar {
+  height: 100%;
+  background-color: var(--color-primary-600);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-base);
+}
+
+.file-progress-bar.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+.file-status {
+  flex-shrink: 0;
+  margin-left: var(--space-3);
+}
+
+.file-preview {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+
+/* ===== 工单详情页面样式 Ticket Detail Styles ===== */
+
+.comment-content {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: var(--space-2);
+  background-color: var(--color-surface-secondary);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+}
+
+/* 流转记录时间轴样式 */
+.flow-timeline {
+  position: relative;
+  padding-left: var(--space-8);
+}
+
+.flow-timeline::before {
+  content: '';
+  position: absolute;
+  left: 1rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--color-border);
+}
+
+.flow-item {
+  position: relative;
+  margin-bottom: var(--space-4);
+}
+
+.flow-item:last-child {
+  margin-bottom: 0;
+}
+
+.flow-item::before {
+  content: '';
+  position: absolute;
+  left: -1.75rem;
+  top: 0.5rem;
+  width: 1rem;
+  height: 1rem;
+  background-color: var(--color-primary-500);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-surface);
+  box-shadow: 0 0 0 2px var(--color-border);
+}
+
+.flow-action {
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.flow-users {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-1);
+}
+
+.flow-time {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.flow-reason {
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-secondary);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-primary-500);
+}
+
+/* ===== 统计卡片样式 Stats Card Styles ===== */
+
+.stats-card {
+  background-color: var(--color-surface);
+  overflow: hidden;
+  box-shadow: var(--shadow-base);
+  border-radius: var(--radius-lg);
+}
+
+.stats-card-body {
+  padding: var(--space-5);
+}
+
+.stats-card-content {
+  display: flex;
+  align-items: center;
+}
+
+.stats-card-icon-wrapper {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stats-card-icon {
+  color: white;
+  font-size: var(--text-sm);
+}
+
+.stats-card-info {
+  margin-left: var(--space-5);
+  flex: 1;
+  min-width: 0;
+}
+
+.stats-card-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stats-card-value {
+  display: flex;
+  align-items: baseline;
+}
+
+.stats-card-number {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+}
+
+.stats-card-footer {
+  background-color: var(--color-surface-secondary);
+  padding: var(--space-3) var(--space-5);
+}
+
+.stats-card-link {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+/* 快速操作卡片样式 */
+.quick-action-card {
+  display: flex;
+  align-items: center;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.quick-action-card:hover {
+  text-decoration: none;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.quick-action-icon-wrapper {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-action-icon {
+  color: white;
+  font-size: var(--text-base);
+}
+
+.quick-action-info {
+  margin-left: var(--space-4);
+}
+
+.quick-action-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  margin-bottom: var(--space-1);
+}
+
+.quick-action-description {
+  font-size: var(--text-sm);
+}
+
+/* ===== 工单状态信息样式 Ticket Status Info ===== */
+
+.status-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background-color: var(--color-surface-secondary);
+  border-radius: var(--radius-lg);
+}
+
+.status-info-item {
+  font-size: var(--text-sm);
+}
+
+.status-info-label {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-medium);
+}
+
+.status-info-value {
+  margin-left: var(--space-2);
+  color: var(--color-text-primary);
+}
+
+/* ===== 响应式隐藏工具类 Responsive Utilities ===== */
+
+@media (max-width: 640px) {
+  .hidden-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 641px) {
+  .hidden-desktop {
+    display: none !important;
+  }
+}
+
+/* ===== 系统消息样式 System Message Styles ===== */
+
+.system-message {
+  background-color: var(--color-info-50);
+  border: 1px solid var(--color-info-200);
+  color: var(--color-info-800);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+}
+
+.system-message-icon {
+  margin-right: var(--space-2);
+  color: var(--color-info-500);
+}
+
+/* ===== Toast 通知样式 Toast Notification Styles ===== */
+
+.toast-container {
+  position: fixed;
+  top: 5rem;
+  right: 1rem;
+  z-index: var(--z-toast);
+  max-width: 24rem;
+  width: 100%;
+}
+
+.toast {
+  border: 1px solid;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  margin-bottom: var(--space-2);
+  animation: slideInRight 0.3s ease-out;
+}
+
+.toast-success {
+  background-color: var(--color-success-100);
+  border-color: var(--color-success-300);
+  color: var(--color-success-800);
+}
+
+.toast-error {
+  background-color: var(--color-error-100);
+  border-color: var(--color-error-300);
+  color: var(--color-error-800);
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+}
+
+.toast-icon {
+  margin-right: var(--space-2);
+  flex-shrink: 0;
+}
+
+.toast-message {
+  flex: 1;
+  font-size: var(--text-sm);
+}
+
+.toast-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: var(--text-lg);
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  color: inherit;
+  opacity: 0.7;
+  transition: opacity var(--transition-fast);
+}
+
+.toast-close:hover {
+  opacity: 1;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ===== 404页面动画 404 Page Animations ===== */
+
+.floating-animation {
+  animation: floating 3s ease-in-out infinite;
+}
+
+@keyframes floating {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}

@@ -1,0 +1,443 @@
+/**
+ * 主样式文件 - 整合所有样式模块
+ * Main stylesheet - Integrates all style modules
+ */
+
+/* 导入设计系统变量 */
+@import url('./design-system.css');
+
+/* 导入组件样式 */
+@import url('./components.css');
+
+/* 导入页面特定样式 */
+@import url('./pages.css');
+
+/* ===== 全局布局样式 Global Layout Styles ===== */
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: var(--font-sans);
+  line-height: var(--leading-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== 应用主布局 App Layout ===== */
+
+.app-header {
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  position: fixed;
+  width: 100%;
+  z-index: var(--z-fixed);
+  top: 0;
+}
+
+.app-header-content {
+  padding: var(--space-3) var(--space-3);
+}
+
+.app-header-content-lg {
+  padding: var(--space-3) var(--space-5);
+  padding-left: var(--space-3);
+}
+
+.app-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-header-left {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.app-sidebar-toggle {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.app-sidebar-toggle:hover {
+  background-color: var(--color-gray-100);
+}
+
+.app-sidebar-toggle:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+@media (min-width: 1024px) {
+  .app-sidebar-toggle {
+    display: none;
+  }
+}
+
+.app-logo {
+  display: flex;
+  margin-left: var(--space-2);
+  margin-right: var(--space-24);
+  align-items: center;
+  text-decoration: none;
+}
+
+.app-logo:hover {
+  text-decoration: none;
+}
+
+.app-logo-icon {
+  color: var(--color-primary-600);
+  font-size: var(--text-2xl);
+  margin-right: var(--space-3);
+}
+
+.app-logo-text {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .app-logo-text {
+    font-size: var(--text-2xl);
+  }
+}
+
+.app-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.app-user-menu {
+  display: flex;
+  align-items: center;
+  margin-left: var(--space-3);
+  position: relative;
+}
+
+.app-user-button {
+  display: flex;
+  font-size: var(--text-sm);
+  background-color: var(--color-gray-800);
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.app-user-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--color-gray-300);
+}
+
+.app-user-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: var(--font-medium);
+}
+
+.app-user-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: var(--space-4);
+  z-index: var(--z-dropdown);
+  font-size: var(--text-base);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  min-width: 12rem;
+}
+
+.app-user-dropdown.hidden {
+  display: none;
+}
+
+.app-user-dropdown-header {
+  padding: var(--space-4) var(--space-4) var(--space-3);
+}
+
+.app-user-dropdown-name {
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.app-user-dropdown-email {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-user-dropdown-menu {
+  padding: var(--space-1) 0;
+  margin: 0;
+  list-style: none;
+}
+
+.app-user-dropdown-item {
+  margin: 0;
+}
+
+.app-user-dropdown-link {
+  display: block;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: background-color var(--transition-fast);
+}
+
+.app-user-dropdown-link:hover {
+  background-color: var(--color-gray-100);
+  text-decoration: none;
+  color: var(--color-text-primary);
+}
+
+.app-user-dropdown-link i {
+  margin-right: var(--space-2);
+}
+
+/* ===== 侧边栏样式 Sidebar Styles ===== */
+
+.app-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-sticky);
+  width: 16rem;
+  height: 100vh;
+  padding-top: 5rem;
+  transition: transform var(--transition-base);
+  transform: translateX(-100%);
+  background-color: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+}
+
+@media (min-width: 1024px) {
+  .app-sidebar {
+    transform: translateX(0);
+  }
+}
+
+.app-sidebar.show {
+  transform: translateX(0);
+}
+
+.app-sidebar-content {
+  height: 100%;
+  padding: var(--space-3) var(--space-3) var(--space-4);
+  overflow-y: auto;
+  background-color: var(--color-surface);
+}
+
+.app-workspace-selector {
+  margin-bottom: var(--space-6);
+}
+
+.app-workspace-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.app-workspace-select {
+  width: 100%;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  font-size: var(--text-sm);
+  transition: all var(--transition-fast);
+}
+
+.app-workspace-select:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.app-sidebar-nav {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.app-sidebar-nav > li {
+  margin-bottom: var(--space-2);
+}
+
+.app-sidebar-nav > li:last-child {
+  margin-bottom: 0;
+}
+
+.app-sidebar-nav .sidebar-link {
+  font-weight: var(--font-medium);
+}
+
+.app-sidebar-nav .sidebar-link i {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+  margin-right: var(--space-3);
+}
+
+.app-sidebar-nav .sidebar-link:hover i,
+.app-sidebar-nav .sidebar-link.active i {
+  color: var(--color-text-primary);
+}
+
+.app-sidebar-nav .sidebar-link span {
+  margin-left: var(--space-3);
+}
+
+/* ===== 主内容区域样式 Main Content Styles ===== */
+
+.app-main {
+  padding: var(--space-4);
+  margin-top: 3.5rem;
+  min-height: calc(100vh - 3.5rem);
+}
+
+@media (min-width: 1024px) {
+  .app-main {
+    margin-left: 16rem;
+  }
+}
+
+.app-main-content {
+  padding: var(--space-4);
+}
+
+/* ===== 页面标题样式 Page Header Styles ===== */
+
+.page-header {
+  margin-bottom: var(--space-6);
+}
+
+.page-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.page-header-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.page-header-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-1);
+}
+
+.page-header-subtitle {
+  color: var(--color-text-secondary);
+  margin: 0;
+  font-size: var(--text-base);
+}
+
+.page-header-right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* ===== 工具类扩展 Extended Utilities ===== */
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.focus-visible:focus {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+/* ===== 打印样式 Print Styles ===== */
+
+@media print {
+  .app-header,
+  .app-sidebar,
+  .btn,
+  .page-header-right {
+    display: none !important;
+  }
+  
+  .app-main {
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+}
+
+/* ===== 暗色主题支持 Dark Theme Support ===== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 在未来版本中可以添加暗色主题变量 */
+  }
+}

@@ -11,112 +11,108 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <style>
-        .floating-animation {
-            animation: floating 3s ease-in-out infinite;
-        }
-        
-        @keyframes floating {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-    </style>
+    <!-- 统一样式系统 -->
+    <link rel="stylesheet" href="/css/main.css">
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center">
-    <div class="max-w-lg w-full px-6">
-        <div class="text-center">
+<body style="background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-info-100) 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+    <div style="max-width: 32rem; width: 100%; padding: 0 var(--space-6);">
+        <div style="text-align: center;">
             <!-- 404 图标 -->
-            <div class="mx-auto h-32 w-32 text-blue-500 mb-8 floating-animation">
-                <i class="fas fa-search text-8xl"></i>
+            <div class="floating-animation" style="margin: 0 auto var(--space-8); height: 8rem; width: 8rem; color: var(--color-primary-500);">
+                <i class="fas fa-search" style="font-size: 5rem;"></i>
             </div>
             
             <!-- 404 标题 -->
-            <div class="mb-8">
-                <h1 class="text-6xl font-bold text-gray-800 mb-2">404</h1>
-                <h2 class="text-2xl font-semibold text-gray-600 mb-4">页面未找到</h2>
-                <p class="text-gray-500 text-lg">
+            <div style="margin-bottom: var(--space-8);">
+                <h1 style="font-size: 4rem; font-weight: var(--font-bold); color: var(--color-text-primary); margin-bottom: var(--space-2);">404</h1>
+                <h2 style="font-size: var(--text-2xl); font-weight: var(--font-semibold); color: var(--color-text-secondary); margin-bottom: var(--space-4);">页面未找到</h2>
+                <p style="color: var(--color-text-secondary); font-size: var(--text-lg);">
                     抱歉，您访问的页面似乎不存在或已被移动
                 </p>
             </div>
             
             <!-- 可能的原因 -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-8 text-left">
-                <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                    <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
-                    可能的原因：
-                </h3>
-                <ul class="space-y-2 text-gray-600">
-                    <li class="flex items-start">
-                        <i class="fas fa-circle text-xs text-gray-400 mt-2 mr-3"></i>
-                        <span>URL地址输入错误</span>
-                    </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-circle text-xs text-gray-400 mt-2 mr-3"></i>
-                        <span>页面已被删除或移动</span>
-                    </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-circle text-xs text-gray-400 mt-2 mr-3"></i>
-                        <span>链接已过期或无效</span>
-                    </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-circle text-xs text-gray-400 mt-2 mr-3"></i>
-                        <span>您没有访问权限</span>
-                    </li>
-                </ul>
+            <div class="card" style="margin-bottom: var(--space-8); text-align: left;">
+                <div class="card-body">
+                    <h3 style="font-size: var(--text-lg); font-weight: var(--font-medium); color: var(--color-text-primary); margin-bottom: var(--space-4); display: flex; align-items: center;">
+                        <i class="fas fa-lightbulb" style="color: var(--color-warning-500); margin-right: var(--space-2);"></i>
+                        可能的原因：
+                    </h3>
+                    <ul style="display: flex; flex-direction: column; gap: var(--space-2); color: var(--color-text-secondary);">
+                        <li style="display: flex; align-items: flex-start;">
+                            <i class="fas fa-circle" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 0.5rem; margin-right: var(--space-3);"></i>
+                            <span>URL地址输入错误</span>
+                        </li>
+                        <li style="display: flex; align-items: flex-start;">
+                            <i class="fas fa-circle" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 0.5rem; margin-right: var(--space-3);"></i>
+                            <span>页面已被删除或移动</span>
+                        </li>
+                        <li style="display: flex; align-items: flex-start;">
+                            <i class="fas fa-circle" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 0.5rem; margin-right: var(--space-3);"></i>
+                            <span>链接已过期或无效</span>
+                        </li>
+                        <li style="display: flex; align-items: flex-start;">
+                            <i class="fas fa-circle" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 0.5rem; margin-right: var(--space-3);"></i>
+                            <span>您没有访问权限</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
             
             <!-- 操作按钮 -->
-            <div class="space-y-4">
-                <a href="/" 
-                   class="block w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-150 ease-in-out transform hover:scale-105">
-                    <i class="fas fa-home mr-2"></i>返回首页
+            <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+                <a href="/" class="btn btn-primary" style="width: 100%; text-decoration: none; transform: scale(1); transition: transform var(--transition-fast);" 
+                   onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <i class="fas fa-home"></i>返回首页
                 </a>
                 
-                <div class="grid grid-cols-2 gap-4">
-                    <button onclick="history.back()" 
-                            class="bg-gray-600 text-white px-4 py-3 rounded-lg hover:bg-gray-700 transition duration-150 ease-in-out">
-                        <i class="fas fa-arrow-left mr-2"></i>返回上页
+                <div class="grid grid-cols-2" style="gap: var(--space-4);">
+                    <button onclick="history.back()" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>返回上页
                     </button>
                     
-                    <a href="/tickets" 
-                       class="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition duration-150 ease-in-out text-center">
-                        <i class="fas fa-ticket-alt mr-2"></i>查看工单
+                    <a href="/tickets" class="btn btn-success" style="text-decoration: none;">
+                        <i class="fas fa-ticket-alt"></i>查看工单
                     </a>
                 </div>
             </div>
             
             <!-- 搜索建议 -->
-            <div class="mt-8 bg-gray-50 rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center justify-center">
-                    <i class="fas fa-compass text-blue-500 mr-2"></i>
+            <div style="margin-top: var(--space-8); background-color: var(--color-surface-secondary); border-radius: var(--radius-lg); padding: var(--space-6);">
+                <h3 style="font-size: var(--text-lg); font-weight: var(--font-medium); color: var(--color-text-primary); margin-bottom: var(--space-4); display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-compass" style="color: var(--color-primary-500); margin-right: var(--space-2);"></i>
                     您可能在寻找：
                 </h3>
-                <div class="grid grid-cols-2 gap-3 text-sm">
-                    <a href="/" class="flex items-center p-3 bg-white rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out">
-                        <i class="fas fa-tachometer-alt text-blue-500 mr-2"></i>
+                <div class="grid grid-cols-2" style="gap: var(--space-3); font-size: var(--text-sm);">
+                    <a href="/" style="display: flex; align-items: center; padding: var(--space-3); background-color: var(--color-surface); border-radius: var(--radius-lg); transition: all var(--transition-fast); text-decoration: none; color: inherit;"
+                       onmouseover="this.style.backgroundColor='var(--color-primary-50)'" onmouseout="this.style.backgroundColor='var(--color-surface)'">
+                        <i class="fas fa-tachometer-alt" style="color: var(--color-primary-500); margin-right: var(--space-2);"></i>
                         <span>仪表盘</span>
                     </a>
-                    <a href="/tickets" class="flex items-center p-3 bg-white rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out">
-                        <i class="fas fa-list text-green-500 mr-2"></i>
+                    <a href="/tickets" style="display: flex; align-items: center; padding: var(--space-3); background-color: var(--color-surface); border-radius: var(--radius-lg); transition: all var(--transition-fast); text-decoration: none; color: inherit;"
+                       onmouseover="this.style.backgroundColor='var(--color-primary-50)'" onmouseout="this.style.backgroundColor='var(--color-surface)'">
+                        <i class="fas fa-list" style="color: var(--color-success-500); margin-right: var(--space-2);"></i>
                         <span>工单列表</span>
                     </a>
-                    <a href="/tickets/create" class="flex items-center p-3 bg-white rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out">
-                        <i class="fas fa-plus text-purple-500 mr-2"></i>
+                    <a href="/tickets/create" style="display: flex; align-items: center; padding: var(--space-3); background-color: var(--color-surface); border-radius: var(--radius-lg); transition: all var(--transition-fast); text-decoration: none; color: inherit;"
+                       onmouseover="this.style.backgroundColor='var(--color-primary-50)'" onmouseout="this.style.backgroundColor='var(--color-surface)'">
+                        <i class="fas fa-plus" style="color: #8b5cf6; margin-right: var(--space-2);"></i>
                         <span>创建工单</span>
                     </a>
-                    <a href="/reports" class="flex items-center p-3 bg-white rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out">
-                        <i class="fas fa-chart-bar text-orange-500 mr-2"></i>
+                    <a href="/reports" style="display: flex; align-items: center; padding: var(--space-3); background-color: var(--color-surface); border-radius: var(--radius-lg); transition: all var(--transition-fast); text-decoration: none; color: inherit;"
+                       onmouseover="this.style.backgroundColor='var(--color-primary-50)'" onmouseout="this.style.backgroundColor='var(--color-surface)'">
+                        <i class="fas fa-chart-bar" style="color: #ea580c; margin-right: var(--space-2);"></i>
                         <span>统计报表</span>
                     </a>
                 </div>
             </div>
             
             <!-- 底部信息 -->
-            <div class="mt-8 text-center">
-                <p class="text-sm text-gray-500">
+            <div style="margin-top: var(--space-8); text-align: center;">
+                <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
                     如果您认为这是一个错误，请联系系统管理员
                 </p>
-                <p class="text-xs text-gray-400 mt-2">
+                <p style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2);">
                     错误代码：404 | 时间：<span th:text="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd HH:mm:ss')}">2024-01-01 12:00:00</span>
                 </p>
             </div>
