@@ -26,9 +26,6 @@
                     </div>
                     <p class="page-header-subtitle">
                         工单编号：<span style="font-family: var(--font-mono);" th:text="${ticket.ticketNo}">TICKET-001</span>
-                        <span th:if="${ticket.workspace != null}">
-                            | 工作空间：<span class="workspace-badge" th:style="'background-color: ' + ${ticket.workspace.color}" th:text="${ticket.workspace.name}">工作空间</span>
-                        </span>
                     </p>
                 </div>
                 <div class="page-header-right">
