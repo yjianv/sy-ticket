@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -82,4 +83,76 @@ public interface TicketMapper {
      * @return 数量
      */
     int countWithConditions(@Param("params") Map<String, Object> params);
+    
+    // ===== 统计报表相关方法 =====
+    
+    /**
+     * 获取工单总数
+     */
+    int getTotalCount(@Param("workspaceId") Long workspaceId);
+    
+    /**
+     * 按状态统计工单数量
+     */
+    int getCountByStatus(@Param("workspaceId") Long workspaceId, @Param("status") String status);
+    
+    /**
+     * 获取今日新增工单数
+     */
+    int getTodayNewCount(@Param("workspaceId") Long workspaceId);
+    
+    /**
+     * 获取逾期工单数
+     */
+    int getOverDueCount(@Param("workspaceId") Long workspaceId);
+    
+    /**
+     * 获取状态分布统计
+     */
+    List<Map<String, Object>> getStatusDistribution(@Param("workspaceId") Long workspaceId);
+    
+    /**
+     * 获取优先级分布统计
+     */
+    List<Map<String, Object>> getPriorityDistribution(@Param("workspaceId") Long workspaceId);
+    
+    /**
+     * 获取类型分布统计
+     */
+    List<Map<String, Object>> getTypeDistribution(@Param("workspaceId") Long workspaceId);
+    
+    /**
+     * 获取创建趋势数据
+     */
+    List<Map<String, Object>> getCreationTrend(@Param("workspaceId") Long workspaceId, @Param("days") int days);
+    
+    /**
+     * 获取用户工作量统计
+     */
+    List<Map<String, Object>> getUserWorkload(@Param("workspaceId") Long workspaceId);
+    
+    /**
+     * 获取平均处理时间
+     */
+    BigDecimal getAverageProcessTime(@Param("workspaceId") Long workspaceId);
+    
+    /**
+     * 获取平均解决时间
+     */
+    BigDecimal getAverageResolveTime(@Param("workspaceId") Long workspaceId);
+    
+    /**
+     * 获取最快解决时间
+     */
+    BigDecimal getMinResolveTime(@Param("workspaceId") Long workspaceId);
+    
+    /**
+     * 获取最慢解决时间
+     */
+    BigDecimal getMaxResolveTime(@Param("workspaceId") Long workspaceId);
+    
+    /**
+     * 获取工作空间分布统计
+     */
+    List<Map<String, Object>> getWorkspaceDistribution();
 }

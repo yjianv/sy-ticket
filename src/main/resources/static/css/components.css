@@ -293,6 +293,9 @@
 }
 
 .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: var(--space-6) var(--space-6) var(--space-4);
   border-bottom: 1px solid var(--color-border);
 }
@@ -302,6 +305,8 @@
   font-weight: var(--font-medium);
   color: var(--color-text-primary);
   margin: 0;
+  flex: 1;
+  display: block;
 }
 
 .card-body {

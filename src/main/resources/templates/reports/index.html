@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">统计报表</title>
+</head>
+
+<th:block layout:fragment="custom-head">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 日期选择器 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh.js"></script>
+</th:block>
+
+<body>
+    <div layout:fragment="content">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-header-left">
+                    <h1 class="page-header-title">统计报表</h1>
+                    <p class="page-header-subtitle">工单数据统计分析</p>
+                </div>
+                <div class="page-header-right">
+                    <div class="flex items-center space-x-4">
+                        <!-- 时间范围选择 -->
+                        <div class="form-group mb-0">
+                            <label class="form-label sr-only">时间范围</label>
+                            <select id="time-range" class="form-select">
+                                <option value="7">最近7天</option>
+                                <option value="30" selected>最近30天</option>
+                                <option value="90">最近90天</option>
+                                <option value="365">最近一年</option>
+                            </select>
+                        </div>
+                        
+                        <!-- 刷新按钮 -->
+                        <button id="refresh-btn" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i>刷新数据
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 统计概览卡片 -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- 总工单数 -->
+            <div class="stats-card">
+                <div class="stats-card-header">
+                    <div class="stats-card-icon bg-primary">
+                        <i class="fas fa-ticket-alt text-white"></i>
+                    </div>
+                    <div class="stats-card-info">
+                        <h3 class="stats-card-title">总工单数</h3>
+                        <p class="stats-card-value" id="total-tickets">-</p>
+                    </div>
+                </div>
+                <div class="stats-card-footer">
+                    <span class="stats-card-change" id="total-change">-</span>
+                </div>
+            </div>
+            
+            <!-- 待处理工单 -->
+            <div class="stats-card">
+                <div class="stats-card-header">
+                    <div class="stats-card-icon bg-warning">
+                        <i class="fas fa-clock text-white"></i>
+                    </div>
+                    <div class="stats-card-info">
+                        <h3 class="stats-card-title">待处理</h3>
+                        <p class="stats-card-value" id="open-tickets">-</p>
+                    </div>
+                </div>
+                <div class="stats-card-footer">
+                    <span class="stats-card-progress">
+                        <span class="stats-card-progress-bar bg-warning" id="open-progress"></span>
+                    </span>
+                </div>
+            </div>
+            
+            <!-- 今日新增 -->
+            <div class="stats-card">
+                <div class="stats-card-header">
+                    <div class="stats-card-icon bg-success">
+                        <i class="fas fa-plus text-white"></i>
+                    </div>
+                    <div class="stats-card-info">
+                        <h3 class="stats-card-title">今日新增</h3>
+                        <p class="stats-card-value" id="today-new-tickets">-</p>
+                    </div>
+                </div>
+                <div class="stats-card-footer">
+                    <span class="stats-card-change positive" id="today-change">-</span>
+                </div>
+            </div>
+            
+            <!-- 逾期工单 -->
+            <div class="stats-card">
+                <div class="stats-card-header">
+                    <div class="stats-card-icon bg-error">
+                        <i class="fas fa-exclamation-triangle text-white"></i>
+                    </div>
+                    <div class="stats-card-info">
+                        <h3 class="stats-card-title">逾期工单</h3>
+                        <p class="stats-card-value" id="overdue-tickets">-</p>
+                    </div>
+                </div>
+                <div class="stats-card-footer">
+                    <span class="stats-card-change negative" id="overdue-change">-</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 图表区域 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- 状态分布饼图 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">工单状态分布</h3>
+                    <div class="card-actions">
+                        <button class="btn btn-sm btn-secondary" onclick="exportChart('statusChart', '工单状态分布')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="statusChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+            
+            <!-- 优先级分布饼图 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">优先级分布</h3>
+                    <div class="card-actions">
+                        <button class="btn btn-sm btn-secondary" onclick="exportChart('priorityChart', '优先级分布')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="priorityChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- 类型分布饼图 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">工单类型分布</h3>
+                    <div class="card-actions">
+                        <button class="btn btn-sm btn-secondary" onclick="exportChart('typeChart', '工单类型分布')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="typeChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+            
+            <!-- 时效性分析 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">时效性分析</h3>
+                </div>
+                <div class="card-body">
+                    <div class="space-y-4">
+                        <div class="stats-item">
+                            <div class="stats-item-label">平均处理时间</div>
+                            <div class="stats-item-value" id="avg-process-time">-</div>
+                        </div>
+                        <div class="stats-item">
+                            <div class="stats-item-label">平均解决时间</div>
+                            <div class="stats-item-value" id="avg-resolve-time">-</div>
+                        </div>
+                        <div class="stats-item">
+                            <div class="stats-item-label">最快解决时间</div>
+                            <div class="stats-item-value" id="min-resolve-time">-</div>
+                        </div>
+                        <div class="stats-item">
+                            <div class="stats-item-label">最慢解决时间</div>
+                            <div class="stats-item-value" id="max-resolve-time">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 趋势分析 -->
+        <div class="card mb-8">
+            <div class="card-header">
+                <h3 class="card-title">工单创建趋势</h3>
+                <div class="card-actions">
+                    <button class="btn btn-sm btn-secondary" onclick="exportChart('trendChart', '工单创建趋势')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="trendChart" width="800" height="300"></canvas>
+            </div>
+        </div>
+        
+        <!-- 用户工作量统计 -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">用户工作量统计</h3>
+                <div class="card-actions">
+                    <button class="btn btn-sm btn-secondary" onclick="exportChart('workloadChart', '用户工作量统计')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="workloadChart" width="800" height="400"></canvas>
+            </div>
+        </div>
+        
+        <!-- 加载指示器 -->
+        <div id="loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
+                <div class="flex items-center">
+                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
+                    <div class="text-gray-900">正在加载数据...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<th:block layout:fragment="custom-script">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        // 全局变量
+        let currentWorkspaceId = /*[[${workspaceId}]]*/ null;
+        let charts = {};
+        let reportData = {};
+        
+        $(document).ready(function() {
+            // 初始化
+            initializeCharts();
+            loadAllData();
+            
+            // 时间范围变化事件
+            $('#time-range').change(function() {
+                loadTrendData();
+            });
+            
+            // 刷新按钮事件
+            $('#refresh-btn').click(function() {
+                loadAllData();
+            });
+            
+            // 工作空间变化事件（全局事件）
+            $(document).on('workspaceChanged', function(event, workspaceId) {
+                currentWorkspaceId = workspaceId;
+                loadAllData();
+            });
+        });
+        
+        // 初始化图表
+        function initializeCharts() {
+            // 状态分布饼图
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            charts.statusChart = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#3b82f6', // 待处理 - 蓝色
+                            '#f59e0b', // 处理中 - 黄色
+                            '#22c55e', // 已解决 - 绿色
+                            '#6b7280', // 已关闭 - 灰色
+                            '#ef4444'  // 已取消 - 红色
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // 优先级分布饼图
+            const priorityCtx = document.getElementById('priorityChart').getContext('2d');
+            charts.priorityChart = new Chart(priorityCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#ef4444', // 紧急 - 红色
+                            '#ea580c', // 高 - 橙色
+                            '#f59e0b', // 中 - 黄色
+                            '#22c55e'  // 低 - 绿色
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // 类型分布饼图
+            const typeCtx = document.getElementById('typeChart').getContext('2d');
+            charts.typeChart = new Chart(typeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#ef4444', // 缺陷 - 红色
+                            '#3b82f6', // 功能 - 蓝色
+                            '#22c55e', // 改进 - 绿色
+                            '#8b5cf6', // 问题 - 紫色
+                            '#6b7280'  // 其他 - 灰色
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // 趋势折线图
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            charts.trendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: '工单数量',
+                        data: [],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 用户工作量条形图
+            const workloadCtx = document.getElementById('workloadChart').getContext('2d');
+            charts.workloadChart = new Chart(workloadCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: '创建',
+                            data: [],
+                            backgroundColor: '#3b82f6'
+                        },
+                        {
+                            label: '指派',
+                            data: [],
+                            backgroundColor: '#f59e0b'
+                        },
+                        {
+                            label: '解决',
+                            data: [],
+                            backgroundColor: '#22c55e'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 加载所有数据
+        function loadAllData() {
+            showLoading();
+            
+            Promise.all([
+                loadOverviewData(),
+                loadStatusDistribution(),
+                loadPriorityDistribution(),
+                loadTypeDistribution(),
+                loadTrendData(),
+                loadUserWorkload(),
+                loadTimeAnalysis()
+            ]).then(() => {
+                hideLoading();
+            }).catch(error => {
+                console.error('加载数据失败:', error);
+                AppUtils.showError('加载数据失败');
+                hideLoading();
+            });
+        }
+        
+        // 加载概览数据
+        function loadOverviewData() {
+            return $.get('/reports/overview', { workspaceId: currentWorkspaceId })
+                .done(function(data) {
+                    reportData.overview = data;
+                    updateOverviewDisplay(data);
+                });
+        }
+        
+        // 加载状态分布
+        function loadStatusDistribution() {
+            return $.get('/reports/status-distribution', { workspaceId: currentWorkspaceId })
+                .done(function(data) {
+                    reportData.statusDistribution = data;
+                    updateStatusChart(data);
+                });
+        }
+        
+        // 加载优先级分布
+        function loadPriorityDistribution() {
+            return $.get('/reports/priority-distribution', { workspaceId: currentWorkspaceId })
+                .done(function(data) {
+                    reportData.priorityDistribution = data;
+                    updatePriorityChart(data);
+                });
+        }
+        
+        // 加载类型分布
+        function loadTypeDistribution() {
+            return $.get('/reports/type-distribution', { workspaceId: currentWorkspaceId })
+                .done(function(data) {
+                    reportData.typeDistribution = data;
+                    updateTypeChart(data);
+                });
+        }
+        
+        // 加载趋势数据
+        function loadTrendData() {
+            const days = $('#time-range').val();
+            return $.get('/reports/creation-trend', { 
+                workspaceId: currentWorkspaceId,
+                days: days 
+            }).done(function(data) {
+                reportData.trendData = data;
+                updateTrendChart(data);
+            });
+        }
+        
+        // 加载用户工作量
+        function loadUserWorkload() {
+            return $.get('/reports/user-workload', { workspaceId: currentWorkspaceId })
+                .done(function(data) {
+                    reportData.userWorkload = data;
+                    updateWorkloadChart(data);
+                });
+        }
+        
+        // 加载时间分析
+        function loadTimeAnalysis() {
+            return $.get('/reports/time-analysis', { workspaceId: currentWorkspaceId })
+                .done(function(data) {
+                    reportData.timeAnalysis = data;
+                    updateTimeAnalysisDisplay(data);
+                });
+        }
+        
+        // 更新概览显示
+        function updateOverviewDisplay(data) {
+            $('#total-tickets').text(data.totalTickets || 0);
+            $('#open-tickets').text(data.openTickets || 0);
+            $('#today-new-tickets').text(data.todayNewTickets || 0);
+            $('#overdue-tickets').text(data.overDueTickets || 0);
+            
+            // 计算百分比
+            if (data.totalTickets > 0) {
+                const openPercentage = (data.openTickets / data.totalTickets * 100).toFixed(1);
+                $('#open-progress').css('width', openPercentage + '%');
+            }
+        }
+        
+        // 更新状态图表
+        function updateStatusChart(data) {
+            charts.statusChart.data.labels = data.map(item => item.label);
+            charts.statusChart.data.datasets[0].data = data.map(item => item.value);
+            charts.statusChart.update();
+        }
+        
+        // 更新优先级图表
+        function updatePriorityChart(data) {
+            charts.priorityChart.data.labels = data.map(item => item.label);
+            charts.priorityChart.data.datasets[0].data = data.map(item => item.value);
+            charts.priorityChart.update();
+        }
+        
+        // 更新类型图表
+        function updateTypeChart(data) {
+            charts.typeChart.data.labels = data.map(item => item.label);
+            charts.typeChart.data.datasets[0].data = data.map(item => item.value);
+            charts.typeChart.update();
+        }
+        
+        // 更新趋势图表
+        function updateTrendChart(data) {
+            charts.trendChart.data.labels = data.dates || [];
+            charts.trendChart.data.datasets[0].data = data.counts || [];
+            charts.trendChart.update();
+        }
+        
+        // 更新工作量图表
+        function updateWorkloadChart(data) {
+            const labels = data.map(item => item.userName);
+            const createdCounts = data.map(item => parseInt(item.createdCount) || 0);
+            const assignedCounts = data.map(item => parseInt(item.assignedCount) || 0);
+            const resolvedCounts = data.map(item => parseInt(item.resolvedCount) || 0);
+            
+            charts.workloadChart.data.labels = labels;
+            charts.workloadChart.data.datasets[0].data = createdCounts;
+            charts.workloadChart.data.datasets[1].data = assignedCounts;
+            charts.workloadChart.data.datasets[2].data = resolvedCounts;
+            charts.workloadChart.update();
+        }
+        
+        // 更新时间分析显示
+        function updateTimeAnalysisDisplay(data) {
+            $('#avg-process-time').text(formatTime(data.avgProcessTime));
+            $('#avg-resolve-time').text(formatTime(data.avgResolveTime));
+            $('#min-resolve-time').text(formatTime(data.minResolveTime));
+            $('#max-resolve-time').text(formatTime(data.maxResolveTime));
+        }
+        
+        // 格式化时间
+        function formatTime(hours) {
+            if (!hours || hours == 0) return '-';
+            
+            const h = Math.floor(hours);
+            const m = Math.floor((hours - h) * 60);
+            
+            if (h > 0 && m > 0) {
+                return h + '小时' + m + '分钟';
+            } else if (h > 0) {
+                return h + '小时';
+            } else if (m > 0) {
+                return m + '分钟';
+            } else {
+                return '不到1分钟';
+            }
+        }
+        
+        // 显示加载指示器
+        function showLoading() {
+            $('#loading').removeClass('hidden');
+        }
+        
+        // 隐藏加载指示器
+        function hideLoading() {
+            $('#loading').addClass('hidden');
+        }
+        
+        // 导出图表
+        function exportChart(chartId, filename) {
+            const canvas = document.getElementById(chartId);
+            const link = document.createElement('a');
+            link.download = filename + '.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        /*]]>*/
+    </script>
+</th:block>
+</html>

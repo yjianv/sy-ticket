@@ -727,3 +727,275 @@
     transform: translateY(-20px);
   }
 }
+
+/* ===== 统计报表页面样式 Reports Page Styles ===== */
+
+/* 统计卡片样式 */
+.stats-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-light);
+  transition: all var(--transition-fast);
+}
+
+.stats-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.stats-card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.stats-card-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--space-4);
+  flex-shrink: 0;
+}
+
+.stats-card-icon.bg-primary {
+  background-color: var(--color-primary-500);
+}
+
+.stats-card-icon.bg-warning {
+  background-color: var(--color-warning-500);
+}
+
+.stats-card-icon.bg-success {
+  background-color: var(--color-success-500);
+}
+
+.stats-card-icon.bg-error {
+  background-color: var(--color-error-500);
+}
+
+.stats-card-info {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.stats-card-title {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: var(--leading-tight);
+}
+
+.stats-card-value {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  margin: var(--space-1) 0 0 0;
+  line-height: var(--leading-tight);
+}
+
+.stats-card-footer {
+  margin-top: var(--space-2);
+}
+
+.stats-card-change {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+}
+
+.stats-card-change.positive {
+  color: var(--color-success-600);
+}
+
+.stats-card-change.negative {
+  color: var(--color-error-600);
+}
+
+.stats-card-progress {
+  display: block;
+  width: 100%;
+  height: 0.25rem;
+  background-color: var(--color-gray-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.stats-card-progress-bar {
+  height: 100%;
+  transition: width var(--transition-base);
+  border-radius: var(--radius-full);
+}
+
+.stats-card-progress-bar.bg-warning {
+  background-color: var(--color-warning-500);
+}
+
+/* 统计项目样式 */
+.stats-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.stats-item:last-child {
+  border-bottom: none;
+}
+
+.stats-item-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-medium);
+}
+
+.stats-item-value {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+}
+
+/* 图表容器样式 */
+.chart-container {
+  position: relative;
+  height: 300px;
+  padding: var(--space-4);
+}
+
+.chart-container canvas {
+  max-width: 100%;
+  height: auto !important;
+}
+
+/* 卡片动作按钮样式 */
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.card-actions .btn {
+  padding: var(--space-2);
+  min-width: auto;
+  aspect-ratio: 1;
+}
+
+/* 时间范围选择器样式 */
+.time-range-selector {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.time-range-selector label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+/* 响应式图表样式 */
+@media (max-width: 768px) {
+  .stats-card {
+    padding: var(--space-4);
+  }
+  
+  .stats-card-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-right: var(--space-3);
+  }
+  
+  .stats-card-value {
+    font-size: var(--text-xl);
+  }
+  
+  .chart-container {
+    height: 250px;
+    padding: var(--space-2);
+  }
+}
+
+/* 加载状态样式 */
+.chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: var(--color-text-secondary);
+}
+
+.chart-loading .loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--color-border);
+  border-top: 2px solid var(--color-primary-500);
+  border-radius: var(--radius-full);
+  animation: spin 1s linear infinite;
+  margin-right: var(--space-3);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 空数据状态样式 */
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: var(--color-text-muted);
+}
+
+.chart-empty-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-4);
+  opacity: 0.5;
+}
+
+.chart-empty-text {
+  font-size: var(--text-sm);
+}
+
+/* 统计数值动画 */
+.stats-number {
+  transition: all var(--transition-slow);
+}
+
+.stats-number.updating {
+  opacity: 0.6;
+  transform: scale(0.95);
+}
+
+/* 图例样式覆盖 */
+.chart-legend {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.chart-legend-color {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: var(--radius-sm);
+  margin-right: var(--space-2);
+}

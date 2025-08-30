@@ -11,7 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -222,5 +226,142 @@ public class TicketService {
         params.put("status", status);
         
         return ticketMapper.countWithConditions(params);
+    }
+    
+    // ===== 统计报表相关方法 =====
+    
+    /**
+     * 获取工单总数
+     */
+    public int getTotalCount(Long workspaceId) {
+        return ticketMapper.getTotalCount(workspaceId);
+    }
+    
+    /**
+     * 按状态统计工单数量
+     */
+    public int getCountByStatus(Long workspaceId, String status) {
+        return ticketMapper.getCountByStatus(workspaceId, status);
+    }
+    
+    /**
+     * 获取今日新增工单数
+     */
+    public int getTodayNewCount(Long workspaceId) {
+        return ticketMapper.getTodayNewCount(workspaceId);
+    }
+    
+    /**
+     * 获取逾期工单数
+     */
+    public int getOverDueCount(Long workspaceId) {
+        return ticketMapper.getOverDueCount(workspaceId);
+    }
+    
+    /**
+     * 获取状态分布统计
+     */
+    public List<Map<String, Object>> getStatusDistribution(Long workspaceId) {
+        return ticketMapper.getStatusDistribution(workspaceId);
+    }
+    
+    /**
+     * 获取优先级分布统计
+     */
+    public List<Map<String, Object>> getPriorityDistribution(Long workspaceId) {
+        return ticketMapper.getPriorityDistribution(workspaceId);
+    }
+    
+    /**
+     * 获取类型分布统计
+     */
+    public List<Map<String, Object>> getTypeDistribution(Long workspaceId) {
+        return ticketMapper.getTypeDistribution(workspaceId);
+    }
+    
+    /**
+     * 获取创建趋势数据
+     */
+    public Map<String, Object> getCreationTrend(Long workspaceId, int days) {
+        List<Map<String, Object>> trendData = ticketMapper.getCreationTrend(workspaceId, days);
+        
+        // 填充缺失的日期，确保连续性
+        Map<String, Integer> dataMap = new HashMap<>();
+        for (Map<String, Object> item : trendData) {
+            String dateStr = item.get("date").toString();
+            // 处理数据库返回的 count 字段，可能是 Long 或 Integer 类型
+            Object countObj = item.get("count");
+            Integer count = 0;
+            if (countObj instanceof Long) {
+                count = ((Long) countObj).intValue();
+            } else if (countObj instanceof Integer) {
+                count = (Integer) countObj;
+            }
+            dataMap.put(dateStr, count);
+        }
+        
+        List<String> dates = new ArrayList<>();
+        List<Integer> counts = new ArrayList<>();
+        
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(days - 1);
+        
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            String dateStr = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            dates.add(dateStr);
+            counts.add(dataMap.getOrDefault(dateStr, 0));
+        }
+        
+        Map<String, Object> result = new HashMap<>();
+        result.put("dates", dates);
+        result.put("counts", counts);
+        
+        return result;
+    }
+    
+    /**
+     * 获取用户工作量统计
+     */
+    public List<Map<String, Object>> getUserWorkload(Long workspaceId) {
+        return ticketMapper.getUserWorkload(workspaceId);
+    }
+    
+    /**
+     * 获取平均处理时间
+     */
+    public BigDecimal getAverageProcessTime(Long workspaceId) {
+        BigDecimal avgTime = ticketMapper.getAverageProcessTime(workspaceId);
+        return avgTime != null ? avgTime : BigDecimal.ZERO;
+    }
+    
+    /**
+     * 获取平均解决时间
+     */
+    public BigDecimal getAverageResolveTime(Long workspaceId) {
+        BigDecimal avgTime = ticketMapper.getAverageResolveTime(workspaceId);
+        return avgTime != null ? avgTime : BigDecimal.ZERO;
+    }
+    
+    /**
+     * 获取最快解决时间
+     */
+    public BigDecimal getMinResolveTime(Long workspaceId) {
+        BigDecimal minTime = ticketMapper.getMinResolveTime(workspaceId);
+        return minTime != null ? minTime : BigDecimal.ZERO;
+    }
+    
+    /**
+     * 获取最慢解决时间
+     */
+    public BigDecimal getMaxResolveTime(Long workspaceId) {
+        BigDecimal maxTime = ticketMapper.getMaxResolveTime(workspaceId);
+        return maxTime != null ? maxTime : BigDecimal.ZERO;
+    }
+    
+    /**
+     * 获取工作空间分布统计
+     */
+    public List<Map<String, Object>> getWorkspaceDistribution() {
+        return ticketMapper.getWorkspaceDistribution();
     }
 }
