@@ -75,16 +75,49 @@
     <aside id="sidebar" class="app-sidebar">
         <div class="app-sidebar-content">
             <!-- 工作空间选择器 -->
-            <div class="app-workspace-selector" th:if="${workspaces != null and !workspaces.isEmpty()}">
-                <label class="app-workspace-label">工作空间</label>
-                <select id="workspace-select" class="app-workspace-select">
-                    <option th:each="workspace : ${workspaces}" 
-                            th:value="${workspace.id}" 
-                            th:text="${workspace.name}"
-                            th:selected="${currentWorkspace != null and workspace.id == currentWorkspace.id}">
-                        工作空间
-                    </option>
-                </select>
+            <div class="workspace-selector" th:if="${workspaces != null and !workspaces.isEmpty()}">
+                <!-- 当前选中的工作空间 -->
+                <div class="workspace-selector-current" id="workspace-current">
+                    <div class="workspace-item-content">
+                        <div class="workspace-item-avatar" th:classappend="${'workspace-color-' + (currentWorkspace != null ? (currentWorkspace.id % 8 + 1) : '1')}">
+                            <span th:text="${currentWorkspace != null ? currentWorkspace.name.substring(0,1).toUpperCase() : 'W'}">W</span>
+                        </div>
+                        <div class="workspace-item-info">
+                            <div class="workspace-item-name" th:text="${currentWorkspace != null ? currentWorkspace.name : '选择工作空间'}">选择工作空间</div>
+                            <div class="workspace-item-status">当前工作空间</div>
+                        </div>
+                    </div>
+                    <div class="workspace-selector-arrow">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+                
+                <!-- 工作空间下拉列表 -->
+                <div class="workspace-dropdown" id="workspace-dropdown">
+                    <!-- 工作空间列表 -->
+                    <div class="workspace-list" id="workspace-list">
+                        <div class="workspace-item" 
+                             th:each="workspace : ${workspaces}"
+                             th:data-workspace-id="${workspace.id}"
+                             th:data-workspace-name="${workspace.name}"
+                             th:classappend="${currentWorkspace != null and workspace.id == currentWorkspace.id} ? 'active' : ''">
+                            <div class="workspace-item-content">
+                                <div class="workspace-item-avatar" th:classappend="${'workspace-color-' + (workspace.id % 8 + 1)}">
+                                    <span th:text="${workspace.name.substring(0,1).toUpperCase()}">W</span>
+                                </div>
+                                <div class="workspace-item-info">
+                                    <div class="workspace-item-name" th:text="${workspace.name}">工作空间名称</div>
+                                    <div class="workspace-item-description" th:text="${workspace.description ?: '暂无描述'}">工作空间描述</div>
+                                </div>
+                            </div>
+                            <div class="workspace-item-check" th:if="${currentWorkspace != null and workspace.id == currentWorkspace.id}">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
             </div>
             
             <ul class="app-sidebar-nav">
@@ -146,13 +179,60 @@
                 }
             });
             
-            // 工作空间切换
-            $('#workspace-select').change(function() {
-                const workspaceId = $(this).val();
+            // 工作空间选择器交互
+            initWorkspaceSelector();
+            
+
+            
+            function initWorkspaceSelector() {
+                const $current = $('#workspace-current');
+                const $dropdown = $('#workspace-dropdown');
+                
+                // 点击当前选择器切换下拉
+                $current.on('click', function(e) {
+                    e.stopPropagation();
+                    $dropdown.toggleClass('show');
+                    $current.toggleClass('active');
+                    
+
+                });
+                
+                // 点击工作空间项目
+                $('.workspace-item').on('click', function() {
+                    const workspaceId = $(this).data('workspace-id');
+                    const workspaceName = $(this).data('workspace-name');
+                    
+                    if (!$(this).hasClass('active')) {
+                        switchWorkspace(workspaceId);
+                    }
+                    
+                    $dropdown.removeClass('show');
+                    $current.removeClass('active');
+                });
+                
+
+                // 点击外部关闭下拉
+                $(document).on('click', function(e) {
+                    if (!$(e.target).closest('.workspace-selector').length) {
+                        $dropdown.removeClass('show');
+                        $current.removeClass('active');
+                    }
+                });
+                
+                // ESC 关闭下拉
+                $(document).on('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        $dropdown.removeClass('show');
+                        $current.removeClass('active');
+                    }
+                });
+            }
+            
+            function switchWorkspace(workspaceId) {
                 const currentUrl = new URL(window.location);
                 currentUrl.searchParams.set('workspaceId', workspaceId);
                 window.location.href = currentUrl.toString();
-            });
+            }
             
 
         });

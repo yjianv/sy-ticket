@@ -261,33 +261,237 @@ body {
   background-color: var(--color-surface);
 }
 
-.app-workspace-selector {
+/* ===== 工作空间选择器 Workspace Selector ===== */
+
+.workspace-selector {
   margin-bottom: var(--space-6);
+  position: relative;
 }
 
-.app-workspace-label {
-  display: block;
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-2);
-}
 
-.app-workspace-select {
-  width: 100%;
-  padding: var(--space-2);
+
+.workspace-selector-current {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  background-color: var(--color-surface);
-  font-size: var(--text-sm);
+  cursor: pointer;
   transition: all var(--transition-fast);
+  min-height: 3.5rem;
 }
 
-.app-workspace-select:focus {
-  outline: none;
+.workspace-selector-current:hover {
+  border-color: var(--color-primary-300);
+  background-color: var(--color-surface-secondary);
+}
+
+.workspace-selector-current.active {
   border-color: var(--color-primary-500);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
+
+.workspace-selector-arrow {
+  color: var(--color-text-secondary);
+  transition: transform var(--transition-fast);
+  margin-left: var(--space-2);
+}
+
+.workspace-selector-current.active .workspace-selector-arrow {
+  transform: rotate(180deg);
+}
+
+.workspace-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: var(--z-dropdown);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  margin-top: var(--space-1);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: all var(--transition-fast);
+  visibility: hidden;
+  max-height: 20rem;
+}
+
+.workspace-dropdown.show {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+
+
+.workspace-list {
+  max-height: 15rem;
+  overflow-y: auto;
+}
+
+.workspace-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.workspace-item:last-child {
+  border-bottom: none;
+}
+
+.workspace-item:hover {
+  background-color: var(--color-surface-secondary);
+}
+
+.workspace-item.active {
+  background-color: var(--color-primary-50);
+}
+
+.workspace-item-content {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.workspace-item-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: white;
+  margin-right: var(--space-3);
+  flex-shrink: 0;
+}
+
+.workspace-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.workspace-item-name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: var(--space-1);
+}
+
+.workspace-item-description,
+.workspace-item-status {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.workspace-item-check {
+  color: var(--color-primary-600);
+  font-size: var(--text-sm);
+  margin-left: var(--space-2);
+}
+
+
+
+/* ===== 工作空间头像颜色 Workspace Avatar Colors ===== */
+
+.workspace-color-1 { background-color: #3b82f6; } /* Blue */
+.workspace-color-2 { background-color: #10b981; } /* Emerald */
+.workspace-color-3 { background-color: #f59e0b; } /* Amber */
+.workspace-color-4 { background-color: #ef4444; } /* Red */
+.workspace-color-5 { background-color: #8b5cf6; } /* Violet */
+.workspace-color-6 { background-color: #06b6d4; } /* Cyan */
+.workspace-color-7 { background-color: #84cc16; } /* Lime */
+.workspace-color-8 { background-color: #ec4899; } /* Pink */
+
+/* ===== 响应式设计 Responsive Design ===== */
+
+@media (max-width: 768px) {
+  .workspace-selector {
+    margin-bottom: var(--space-4);
+  }
+  
+  .workspace-selector-current {
+    min-height: 3rem;
+    padding: var(--space-2);
+  }
+  
+  .workspace-item-avatar {
+    width: 2rem;
+    height: 2rem;
+    font-size: var(--text-xs);
+  }
+  
+  .workspace-dropdown {
+    left: -1rem;
+    right: -1rem;
+    margin-top: var(--space-2);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-xl);
+    max-height: 70vh;
+  }
+  
+  .workspace-list {
+    max-height: 70vh;
+  }
+  
+  .workspace-item {
+    padding: var(--space-4);
+  }
+  
+  .workspace-item-avatar {
+    margin-right: var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  
+  .workspace-selector-current {
+    min-height: 2.5rem;
+    padding: var(--space-2);
+  }
+  
+  .workspace-item-avatar {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  
+  .workspace-item-name {
+    font-size: var(--text-xs);
+  }
+  
+  .workspace-item-description,
+  .workspace-item-status {
+    font-size: 0.65rem;
+  }
+  
+  .workspace-dropdown {
+    max-height: 80vh;
+  }
+  
+  .workspace-list {
+    max-height: 80vh;
+  }
+}
+
+
 
 .app-sidebar-nav {
   margin: 0;
