@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8070
   servlet:
     context-path: /
 
@@ -11,7 +11,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/sy_ticket?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
     username: root
-#    password: root
+    password: JAWiN#_D7CkGya2
     driver-class-name: com.mysql.cj.jdbc.Driver
     
   # Flyway配置

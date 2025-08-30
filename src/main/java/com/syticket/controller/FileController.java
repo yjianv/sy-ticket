@@ -127,7 +127,7 @@ public class FileController {
             if (fileEntity == null) {
                 result.put("success", false);
                 result.put("message", "文件不存在");
-                return ResponseEntity.notFound().body(result);
+                return ResponseEntity.status(404).body(result);
             }
             
             result.put("success", true);

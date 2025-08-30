@@ -1,6 +1,7 @@
 package com.syticket.service;
 
 import com.syticket.entity.Ticket;
+import com.syticket.entity.User;
 import com.syticket.entity.Workspace;
 import com.syticket.mapper.TicketMapper;
 import com.syticket.util.SecurityUtils;
