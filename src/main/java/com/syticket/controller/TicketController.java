@@ -136,6 +136,20 @@ public class TicketController {
         List<Workspace> workspaces = workspaceService.getAllEnabled();
         model.addAttribute("workspaces", workspaces);
         
+        // 获取当前用户的默认工作空间偏好
+        Long userDefaultWorkspaceId = null;
+        Long userId = SecurityUtils.getCurrentUserId();
+        if (userId != null) {
+            User currentUser = userService.findById(userId);
+            if (currentUser != null) {
+                userDefaultWorkspaceId = currentUser.getDefaultWorkspaceId();
+            }
+        }
+        
+        // 确定当前工作空间（优先级：URL参数 > 用户偏好 > 第一个可用的工作空间）
+        Workspace currentWorkspace = workspaceService.getCurrentWorkspace(workspaceId, userDefaultWorkspaceId, workspaces);
+        model.addAttribute("currentWorkspace", currentWorkspace);
+        
         // 获取用户列表
         List<User> users = userService.getAllEnabled();
         model.addAttribute("users", users);
@@ -144,10 +158,12 @@ public class TicketController {
         model.addAttribute("priorities", Ticket.Priority.values());
         model.addAttribute("types", Ticket.Type.values());
         
-        // 默认工作空间
+        // 设置默认工作空间ID（用于表单隐藏字段）
+        Long defaultWorkspaceId = currentWorkspace != null ? currentWorkspace.getId() : null;
         if (workspaceId != null) {
-            model.addAttribute("defaultWorkspaceId", workspaceId);
+            defaultWorkspaceId = workspaceId;
         }
+        model.addAttribute("defaultWorkspaceId", defaultWorkspaceId);
         
         return "tickets/create";
     }
