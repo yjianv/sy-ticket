@@ -119,8 +119,8 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 工单描述 <span class="text-red-500">*</span>
                             </label>
-                            <div class="border border-gray-300 rounded-lg focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
-                                <div id="editor" class="min-h-[300px]"></div>
+                            <div class="description-editor-wrapper">
+                                <div id="editor" class="description-editor"></div>
                             </div>
                             <div class="mt-2 flex items-center justify-between">
                                 <p class="text-xs text-gray-500">
@@ -261,7 +261,7 @@
             
             // 编辑器获得焦点时移除错误样式
             $('#editor').on('click', function() {
-                $(this).parent().removeClass('border-red-500');
+                $(this).closest('.description-editor-wrapper').removeClass('error-state');
             });
         }
         
@@ -462,7 +462,7 @@
                 // 移除之前的错误样式
                 $('.form-input').removeClass('border-red-500');
                 $('.priority-card, .type-card').removeClass('border-red-500');
-                $('#editor').parent().removeClass('border-red-500');
+                $('.description-editor-wrapper').removeClass('error-state');
                 
                 let hasError = false;
                 let firstErrorElement = null;
@@ -508,9 +508,9 @@
                          (block.data.items && block.data.items.length > 0)));
                 
                 if (!hasContent) {
-                    $('#editor').parent().addClass('border-red-500');
+                    $('.description-editor-wrapper').addClass('error-state');
                     AppUtils.showError('请输入工单描述内容');
-                    firstErrorElement = firstErrorElement || $('#step-description');
+                    firstErrorElement = firstErrorElement || $('#editor');
                     hasError = true;
                 }
                 
