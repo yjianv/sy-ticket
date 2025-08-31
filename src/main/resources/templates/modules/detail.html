@@ -25,60 +25,65 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="grid grid-cols-1 lg:grid-cols-3" style="gap: var(--space-6);">
             <!-- 模块信息 -->
-            <div class="col-lg-8">
+            <div class="lg:col-span-2">
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">基本信息</h3>
                     </div>
                     <div class="card-body">
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <label class="info-label">模块名称</label>
-                                <div class="info-value" th:text="${module.name}">模块名称</div>
+                        <div class="grid grid-cols-1 md:grid-cols-2" style="gap: var(--space-6);">
+                            <div>
+                                <label style="display: block; font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--color-text-secondary); margin-bottom: var(--space-2);">模块名称</label>
+                                <div style="font-size: var(--text-base); font-weight: var(--font-medium); color: var(--color-text-primary);" th:text="${module.name}">模块名称</div>
                             </div>
                             
-                            <div class="info-item">
-                                <label class="info-label">状态</label>
-                                <div class="info-value">
-                                    <span th:if="${module.enabled}" class="badge badge-success">启用</span>
-                                    <span th:unless="${module.enabled}" class="badge badge-secondary">禁用</span>
+                            <div>
+                                <label style="display: block; font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--color-text-secondary); margin-bottom: var(--space-2);">状态</label>
+                                <div>
+                                    <span th:if="${module.enabled}" 
+                                          class="badge workspace-badge"
+                                          style="background-color: var(--color-success-600);">启用</span>
+                                    <span th:unless="${module.enabled}" 
+                                          class="badge workspace-badge"
+                                          style="background-color: var(--color-gray-500);">禁用</span>
                                 </div>
                             </div>
                             
-                            <div class="info-item">
-                                <label class="info-label">负责人</label>
-                                <div class="info-value">
+                            <div>
+                                <label style="display: block; font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--color-text-secondary); margin-bottom: var(--space-2);">负责人</label>
+                                <div style="font-size: var(--text-base); color: var(--color-text-primary);">
                                     <span th:if="${module.owner != null}" 
                                           th:text="${module.owner.realName ?: module.owner.username}">负责人</span>
-                                    <span th:unless="${module.owner != null}" class="text-muted">未设置</span>
+                                    <span th:unless="${module.owner != null}" 
+                                          style="color: var(--color-text-secondary);">未设置</span>
                                 </div>
                             </div>
                             
-                            <div class="info-item">
-                                <label class="info-label">排序</label>
-                                <div class="info-value" th:text="${module.sortOrder ?: 0}">0</div>
+                            <div>
+                                <label style="display: block; font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--color-text-secondary); margin-bottom: var(--space-2);">排序</label>
+                                <div style="font-size: var(--text-base); color: var(--color-text-primary);" th:text="${module.sortOrder ?: 0}">0</div>
                             </div>
                             
-                            <div class="info-item full-width">
-                                <label class="info-label">模块描述</label>
-                                <div class="info-value">
-                                    <span th:if="${module.description != null and !module.description.empty}" 
-                                          th:text="${module.description}">模块描述</span>
-                                    <span th:unless="${module.description != null and !module.description.empty}" 
-                                          class="text-muted">暂无描述</span>
-                                </div>
+                            <div>
+                                <label style="display: block; font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--color-text-secondary); margin-bottom: var(--space-2);">创建时间</label>
+                                <div style="font-size: var(--text-base); color: var(--color-text-primary);" th:text="${#temporals.format(module.createdAt, 'yyyy-MM-dd HH:mm:ss')}">创建时间</div>
                             </div>
                             
-                            <div class="info-item">
-                                <label class="info-label">创建时间</label>
-                                <div class="info-value" th:text="${#temporals.format(module.createdAt, 'yyyy-MM-dd HH:mm:ss')}">创建时间</div>
+                            <div>
+                                <label style="display: block; font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--color-text-secondary); margin-bottom: var(--space-2);">更新时间</label>
+                                <div style="font-size: var(--text-base); color: var(--color-text-primary);" th:text="${#temporals.format(module.updatedAt, 'yyyy-MM-dd HH:mm:ss')}">更新时间</div>
                             </div>
-                            
-                            <div class="info-item">
-                                <label class="info-label">更新时间</label>
-                                <div class="info-value" th:text="${#temporals.format(module.updatedAt, 'yyyy-MM-dd HH:mm:ss')}">更新时间</div>
+                        </div>
+                        
+                        <div style="margin-top: var(--space-6); padding-top: var(--space-6); border-top: 1px solid var(--color-border);">
+                            <label style="display: block; font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--color-text-secondary); margin-bottom: var(--space-2);">模块描述</label>
+                            <div style="font-size: var(--text-base); color: var(--color-text-primary); line-height: var(--leading-relaxed);">
+                                <span th:if="${module.description != null and !module.description.empty}" 
+                                      th:text="${module.description}">模块描述</span>
+                                <span th:unless="${module.description != null and !module.description.empty}" 
+                                      style="color: var(--color-text-secondary); font-style: italic;">暂无描述</span>
                             </div>
                         </div>
                     </div>
@@ -86,21 +91,22 @@
             </div>
             
             <!-- 操作面板 -->
-            <div class="col-lg-4">
-                <div class="card">
+            <div>
+                <div class="card" style="margin-bottom: var(--space-6);">
                     <div class="card-header">
                         <h3 class="card-title">操作</h3>
                     </div>
                     <div class="card-body">
-                        <div class="button-group vertical">
+                        <div style="display: flex; flex-direction: column; gap: var(--space-3);">
                             <a th:href="@{/modules/{id}/edit(id=${module.id})}" 
-                               class="btn btn-primary btn-block">
+                               class="btn btn-primary" style="width: 100%;">
                                 <i class="fas fa-edit"></i>编辑模块
                             </a>
                             
                             <button th:if="${module.enabled}" 
                                     type="button" 
-                                    class="btn btn-warning btn-block" 
+                                    class="btn btn-warning" 
+                                    style="width: 100%;"
                                     onclick="disableModule()"
                                     th:data-id="${module.id}"
                                     th:data-name="${module.name}">
@@ -109,7 +115,8 @@
                             
                             <button th:unless="${module.enabled}" 
                                     type="button" 
-                                    class="btn btn-success btn-block" 
+                                    class="btn btn-success" 
+                                    style="width: 100%;"
                                     onclick="enableModule()"
                                     th:data-id="${module.id}"
                                     th:data-name="${module.name}">
@@ -117,7 +124,8 @@
                             </button>
                             
                             <button type="button" 
-                                    class="btn btn-danger btn-block" 
+                                    class="btn btn-danger" 
+                                    style="width: 100%;"
                                     onclick="deleteModule()"
                                     th:data-id="${module.id}"
                                     th:data-name="${module.name}">
@@ -133,21 +141,21 @@
                         <h3 class="card-title">统计信息</h3>
                     </div>
                     <div class="card-body">
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <div class="stat-value">-</div>
-                                <div class="stat-label">关联工单</div>
+                        <div class="grid grid-cols-1" style="gap: var(--space-4);">
+                            <div style="text-align: center; padding: var(--space-4); background-color: var(--color-surface-secondary); border-radius: var(--radius-md);">
+                                <div style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--color-text-primary);">-</div>
+                                <div style="font-size: var(--text-sm); color: var(--color-text-secondary);">关联工单</div>
                             </div>
-                            <div class="stat-item">
-                                <div class="stat-value">-</div>
-                                <div class="stat-label">待处理</div>
+                            <div style="text-align: center; padding: var(--space-4); background-color: var(--color-surface-secondary); border-radius: var(--radius-md);">
+                                <div style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--color-text-primary);">-</div>
+                                <div style="font-size: var(--text-sm); color: var(--color-text-secondary);">待处理</div>
                             </div>
-                            <div class="stat-item">
-                                <div class="stat-value">-</div>
-                                <div class="stat-label">已完成</div>
+                            <div style="text-align: center; padding: var(--space-4); background-color: var(--color-surface-secondary); border-radius: var(--radius-md);">
+                                <div style="font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--color-text-primary);">-</div>
+                                <div style="font-size: var(--text-sm); color: var(--color-text-secondary);">已完成</div>
                             </div>
                         </div>
-                        <p class="text-muted small">工单统计功能待实现</p>
+                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary); text-align: center; margin-top: var(--space-4); margin-bottom: 0;">工单统计功能待实现</p>
                     </div>
                 </div>
             </div>

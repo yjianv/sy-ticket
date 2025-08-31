@@ -23,39 +23,40 @@
         </div>
 
         <!-- 搜索栏 -->
-        <div class="card">
+        <div class="card" style="margin-bottom: var(--space-6);">
             <div class="card-body">
-                <form method="GET" action="/modules" class="search-form">
-                    <div class="search-form-row">
-                        <div class="search-form-group">
-                            <label for="name">模块名称</label>
-                            <input type="text" 
-                                   id="name" 
-                                   name="name" 
-                                   class="form-control" 
-                                   placeholder="搜索模块名称"
-                                   th:value="${name}">
-                        </div>
-                        
-                        <div class="search-form-group">
-                            <label for="enabled">状态</label>
-                            <select id="enabled" name="enabled" class="form-control">
-                                <option value="">全部状态</option>
-                                <option value="true" th:selected="${enabled != null and enabled}">启用</option>
-                                <option value="false" th:selected="${enabled != null and !enabled}">禁用</option>
-                            </select>
-                        </div>
-                        
-                        <div class="search-form-group">
-                            <label>&nbsp;</label>
-                            <div class="search-form-buttons">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-search"></i>搜索
-                                </button>
-                                <a href="/modules" class="btn btn-secondary">
-                                    <i class="fas fa-undo"></i>重置
-                                </a>
-                            </div>
+                <form method="GET" action="/modules" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" style="gap: var(--space-4);">
+                    <!-- 模块名称搜索 -->
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="name" class="form-label">模块名称</label>
+                        <input type="text" 
+                               id="name" 
+                               name="name" 
+                               class="form-input" 
+                               placeholder="搜索模块名称"
+                               th:value="${name}">
+                    </div>
+                    
+                    <!-- 状态筛选 -->
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="enabled" class="form-label">状态</label>
+                        <select id="enabled" name="enabled" class="form-select">
+                            <option value="">全部状态</option>
+                            <option value="true" th:selected="${enabled != null and enabled}">启用</option>
+                            <option value="false" th:selected="${enabled != null and !enabled}">禁用</option>
+                        </select>
+                    </div>
+                    
+                    <!-- 搜索按钮 -->
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="visibility: hidden;">搜索</label>
+                        <div style="display: flex; gap: var(--space-2);">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i>搜索
+                            </button>
+                            <a href="/modules" class="btn btn-secondary">
+                                <i class="fas fa-undo"></i>重置
+                            </a>
                         </div>
                     </div>
                 </form>
@@ -64,10 +65,9 @@
 
         <!-- 模块列表 -->
         <div class="card">
-            <div class="card-body">
+            <div style="overflow: hidden;">
                 <div th:if="${pageInfo.list != null and !pageInfo.list.empty}">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
+                    <table class="table">
                             <thead>
                                 <tr>
                                     <th>模块名称</th>
@@ -82,47 +82,47 @@
                             <tbody>
                                 <tr th:each="module : ${pageInfo.list}">
                                     <td>
-                                        <a th:href="@{/modules/{id}(id=${module.id})}" 
-                                           class="text-primary font-medium hover:underline">
-                                            <span th:text="${module.name}">模块名称</span>
-                                        </a>
+                                        <div style="font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--color-text-primary);">
+                                            <a th:href="@{/modules/{id}(id=${module.id})}" 
+                                               style="color: var(--color-primary-600); text-decoration: none;"
+                                               th:text="${module.name}">模块名称</a>
+                                        </div>
                                     </td>
-                                    <td>
+                                    <td style="font-size: var(--text-sm); color: var(--color-text-secondary);">
                                         <span th:text="${module.description ?: '-'}" 
-                                              class="text-gray-600"
                                               th:title="${module.description}">描述</span>
                                     </td>
-                                    <td>
+                                    <td style="font-size: var(--text-sm); color: var(--color-text-primary);">
                                         <span th:if="${module.owner != null}" 
-                                              class="text-gray-800"
                                               th:text="${module.owner.realName ?: module.owner.username}">负责人</span>
                                         <span th:unless="${module.owner != null}" 
-                                              class="text-gray-400">未设置</span>
+                                              style="color: var(--color-text-secondary);">未设置</span>
                                     </td>
                                     <td>
                                         <span th:if="${module.enabled}" 
-                                              class="badge badge-success">启用</span>
+                                              class="badge workspace-badge"
+                                              style="background-color: var(--color-success-600);">启用</span>
                                         <span th:unless="${module.enabled}" 
-                                              class="badge badge-secondary">禁用</span>
+                                              class="badge workspace-badge"
+                                              style="background-color: var(--color-gray-500);">禁用</span>
                                     </td>
-                                    <td>
-                                        <span th:text="${module.sortOrder ?: 0}" 
-                                              class="text-gray-600">排序</span>
+                                    <td style="font-size: var(--text-sm); color: var(--color-text-secondary);">
+                                        <span th:text="${module.sortOrder ?: 0}">排序</span>
                                     </td>
-                                    <td>
-                                        <span th:text="${#temporals.format(module.createdAt, 'MM-dd HH:mm')}" 
-                                              class="text-gray-600">创建时间</span>
+                                    <td style="font-size: var(--text-sm); color: var(--color-text-secondary);">
+                                        <div th:text="${#temporals.format(module.createdAt, 'yyyy-MM-dd')}">创建日期</div>
+                                        <div style="font-size: var(--text-xs); color: var(--color-text-muted);" th:text="${#temporals.format(module.createdAt, 'HH:mm')}">时间</div>
                                     </td>
-                                    <td>
-                                        <div class="action-buttons">
+                                    <td style="font-size: var(--text-sm); font-weight: var(--font-medium);">
+                                        <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
                                             <a th:href="@{/modules/{id}/edit(id=${module.id})}" 
-                                               class="btn btn-sm btn-outline-primary">
+                                               style="color: var(--color-success-600); text-decoration: none;">
                                                 <i class="fas fa-edit"></i>编辑
                                             </a>
                                             
                                             <button th:if="${module.enabled}" 
                                                     type="button" 
-                                                    class="btn btn-sm btn-outline-warning" 
+                                                    style="background: none; border: none; color: var(--color-warning-600); cursor: pointer; padding: 0; font-size: inherit;" 
                                                     onclick="disableModule(this)"
                                                     th:data-id="${module.id}"
                                                     th:data-name="${module.name}">
@@ -131,7 +131,7 @@
                                             
                                             <button th:unless="${module.enabled}" 
                                                     type="button" 
-                                                    class="btn btn-sm btn-outline-success" 
+                                                    style="background: none; border: none; color: var(--color-success-600); cursor: pointer; padding: 0; font-size: inherit;" 
                                                     onclick="enableModule(this)"
                                                     th:data-id="${module.id}"
                                                     th:data-name="${module.name}">
@@ -139,7 +139,7 @@
                                             </button>
                                             
                                             <button type="button" 
-                                                    class="btn btn-sm btn-outline-danger" 
+                                                    style="background: none; border: none; color: var(--color-error-600); cursor: pointer; padding: 0; font-size: inherit;" 
                                                     onclick="deleteModule(this)"
                                                     th:data-id="${module.id}"
                                                     th:data-name="${module.name}">
@@ -150,53 +150,72 @@
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
-
-                    <!-- 分页 -->
-                    <div th:if="${pageInfo.pages > 1}" class="pagination-wrapper">
-                        <nav class="pagination-nav">
-                            <div class="pagination-info">
-                                显示第 <span th:text="${pageInfo.startRow}">1</span> 到 
-                                <span th:text="${pageInfo.endRow}">20</span> 条，
-                                共 <span th:text="${pageInfo.total}">100</span> 条记录
-                            </div>
-                            
-                            <ul class="pagination">
-                                <li th:if="${pageInfo.hasPreviousPage}" class="page-item">
-                                    <a th:href="@{/modules(page=${pageInfo.prePage}, name=${name}, enabled=${enabled})}" 
-                                       class="page-link">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </a>
-                                </li>
-                                
-                                <li th:each="nav : ${pageInfo.navigatepageNums}" 
-                                    th:class="${nav == pageInfo.pageNum} ? 'page-item active' : 'page-item'">
-                                    <a th:href="@{/modules(page=${nav}, name=${name}, enabled=${enabled})}" 
-                                       th:text="${nav}"
-                                       class="page-link">1</a>
-                                </li>
-                                
-                                <li th:if="${pageInfo.hasNextPage}" class="page-item">
-                                    <a th:href="@{/modules(page=${pageInfo.nextPage}, name=${name}, enabled=${enabled})}" 
-                                       class="page-link">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
                 </div>
-
+                
                 <!-- 空状态 -->
                 <div th:if="${pageInfo.list == null or pageInfo.list.empty}" class="empty-state">
                     <div class="empty-state-icon">
                         <i class="fas fa-cubes"></i>
                     </div>
                     <h3 class="empty-state-title">暂无模块</h3>
-                    <p class="empty-state-text">还没有创建任何模块，点击上方按钮创建第一个模块吧</p>
-                    <a href="/modules/create" class="btn btn-primary">
-                        <i class="fas fa-plus"></i>创建模块
+                    <p class="empty-state-description">还没有创建任何模块，点击上方按钮创建第一个模块吧</p>
+                    <div style="margin-top: var(--space-6);">
+                        <a href="/modules/create" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>创建模块
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 分页 -->
+            <div class="card-footer" style="display: flex; align-items: center; justify-content: space-between;" th:if="${pageInfo.pages > 1}">
+                <div style="flex: 1; display: flex; justify-content: space-between;" class="hidden-desktop">
+                    <!-- 移动端分页 -->
+                    <a th:if="${pageInfo.hasPreviousPage}" 
+                       th:href="@{/modules(page=${pageInfo.prePage}, name=${name}, enabled=${enabled})}"
+                       class="pagination-item" style="border-radius: var(--radius-md);">
+                        上一页
                     </a>
+                    <a th:if="${pageInfo.hasNextPage}"
+                       th:href="@{/modules(page=${pageInfo.nextPage}, name=${name}, enabled=${enabled})}"
+                       class="pagination-item" style="margin-left: var(--space-3); border-radius: var(--radius-md);">
+                        下一页
+                    </a>
+                </div>
+                
+                <div style="flex: 1; display: flex; align-items: center; justify-content: space-between;" class="hidden-mobile">
+                    <div>
+                        <p style="font-size: var(--text-sm); color: var(--color-text-primary);">
+                            显示 <span style="font-weight: var(--font-medium);" th:text="${pageInfo.startRow}">1</span> 到 
+                            <span style="font-weight: var(--font-medium);" th:text="${pageInfo.endRow}">10</span> 条，
+                            共 <span style="font-weight: var(--font-medium);" th:text="${pageInfo.total}">100</span> 条记录
+                        </p>
+                    </div>
+                    <div>
+                        <nav class="pagination" aria-label="Pagination">
+                            <!-- 上一页 -->
+                            <a th:if="${pageInfo.hasPreviousPage}" 
+                               th:href="@{/modules(page=${pageInfo.prePage}, name=${name}, enabled=${enabled})}"
+                               class="pagination-item">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                            
+                            <!-- 页码 -->
+                            <th:block th:each="nav : ${pageInfo.navigatepageNums}">
+                                <a th:href="@{/modules(page=${nav}, name=${name}, enabled=${enabled})}"
+                                   th:classappend="${nav == pageInfo.pageNum} ? 'active' : ''"
+                                   class="pagination-item"
+                                   th:text="${nav}">1</a>
+                            </th:block>
+                            
+                            <!-- 下一页 -->
+                            <a th:if="${pageInfo.hasNextPage}"
+                               th:href="@{/modules(page=${pageInfo.nextPage}, name=${name}, enabled=${enabled})}"
+                               class="pagination-item">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </nav>
+                    </div>
                 </div>
             </div>
         </div>

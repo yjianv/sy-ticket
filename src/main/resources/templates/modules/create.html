@@ -33,34 +33,34 @@
                         <input type="text" 
                                id="name" 
                                name="name" 
-                               class="form-control" 
+                               class="form-input" 
                                placeholder="请输入模块名称"
                                maxlength="50"
                                required>
-                        <small class="form-text text-muted">模块的名称，建议简洁明了</small>
+                        <div class="form-help">模块的名称，建议简洁明了</div>
                     </div>
                     
                     <div class="form-group">
                         <label for="description" class="form-label">模块描述</label>
                         <textarea id="description" 
                                   name="description" 
-                                  class="form-control" 
+                                  class="form-textarea" 
                                   rows="3"
                                   placeholder="请输入模块描述（可选）"
                                   maxlength="500"></textarea>
-                        <small class="form-text text-muted">详细描述模块的功能和职责</small>
+                        <div class="form-help">详细描述模块的功能和职责</div>
                     </div>
                     
                     <div class="form-group">
                         <label for="ownerId" class="form-label">负责人</label>
-                        <select id="ownerId" name="ownerId" class="form-control">
+                        <select id="ownerId" name="ownerId" class="form-select">
                             <option value="">请选择负责人（可选）</option>
                             <option th:each="user : ${users}" 
                                     th:value="${user.id}" 
                                     th:text="${user.realName != null ? user.realName + ' (' + user.username + ')' : user.username}">
                             </option>
                         </select>
-                        <small class="form-text text-muted">选择模块的负责人，工单分配到此模块时会自动指派给负责人</small>
+                        <div class="form-help">选择模块的负责人，工单分配到此模块时会自动指派给负责人</div>
                     </div>
                     
                     <div class="form-group">
@@ -68,33 +68,34 @@
                         <input type="number" 
                                id="sortOrder" 
                                name="sortOrder" 
-                               class="form-control" 
+                               class="form-input" 
                                value="0"
                                min="0"
                                max="999">
-                        <small class="form-text text-muted">数字越小排序越靠前，默认为0</small>
+                        <div class="form-help">数字越小排序越靠前，默认为0</div>
                     </div>
                     
                     <div class="form-group">
-                        <div class="form-check">
+                        <div style="display: flex; align-items: center; gap: var(--space-2);">
                             <input type="checkbox" 
                                    id="enabled" 
                                    name="enabled" 
-                                   class="form-check-input" 
                                    value="true"
                                    checked>
-                            <label for="enabled" class="form-check-label">启用模块</label>
+                            <label for="enabled" style="margin-bottom: 0; cursor: pointer;">启用模块</label>
                         </div>
-                        <small class="form-text text-muted">只有启用的模块才会在创建工单时显示</small>
+                        <div class="form-help">只有启用的模块才会在创建工单时显示</div>
                     </div>
                     
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i>创建模块
-                        </button>
-                        <a href="/modules" class="btn btn-secondary">
-                            <i class="fas fa-times"></i>取消
-                        </a>
+                    <div style="border-top: 1px solid var(--color-border); padding-top: var(--space-6); margin-top: var(--space-6);">
+                        <div style="display: flex; gap: var(--space-3); justify-content: flex-end;">
+                            <a href="/modules" class="btn btn-secondary">
+                                <i class="fas fa-times"></i>取消
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>创建模块
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
