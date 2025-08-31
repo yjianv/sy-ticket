@@ -40,6 +40,9 @@ public class TicketService {
     private WeChatService weChatService;
     
     @Autowired
+    private WeChatAppService weChatAppService;
+    
+    @Autowired
     private UserService userService;
     
     @Autowired
@@ -178,7 +181,21 @@ public class TicketService {
         ticket.setAssigneeId(assigneeId);
         ticket.setStatus(Ticket.Status.IN_PROGRESS);
         
-        return update(ticket);
+        Ticket updatedTicket = update(ticket);
+        
+        // 发送企业微信应用消息通知
+        try {
+            User assignee = userService.findById(assigneeId);
+            User operator = userService.findById(SecurityUtils.getCurrentUserId());
+            if (assignee != null && operator != null) {
+                weChatAppService.sendTicketClaimNotification(updatedTicket, assignee, operator);
+            }
+        } catch (Exception e) {
+            // 记录日志但不影响主要业务流程
+            System.err.println("发送工单指派通知失败: " + e.getMessage());
+        }
+        
+        return updatedTicket;
     }
     
     /**

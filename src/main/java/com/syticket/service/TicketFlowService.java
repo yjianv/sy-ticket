@@ -32,6 +32,9 @@ public class TicketFlowService {
     @Autowired
     private UserService userService;
     
+    @Autowired
+    private WeChatAppService weChatAppService;
+    
     /**
      * 根据工单ID获取流转记录列表
      * 
@@ -105,7 +108,21 @@ public class TicketFlowService {
                   Ticket.Status.IN_PROGRESS.name(), "TRANSFER", reason);
         
         // 更新工单指派人和状态
-        return ticketService.assign(ticketId, toUserId);
+        Ticket updatedTicket = ticketService.assign(ticketId, toUserId);
+        
+        // 发送企业微信移交通知
+        try {
+            User fromUser = userService.findById(SecurityUtils.getCurrentUserId());
+            User toUser = userService.findById(toUserId);
+            if (fromUser != null && toUser != null) {
+                weChatAppService.sendTicketTransferNotification(updatedTicket, fromUser, toUser, reason);
+            }
+        } catch (Exception e) {
+            // 记录日志但不影响主要业务流程
+            System.err.println("发送工单移交通知失败: " + e.getMessage());
+        }
+        
+        return updatedTicket;
     }
     
     /**

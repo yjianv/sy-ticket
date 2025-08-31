@@ -17,6 +17,7 @@ public class User {
     private String realName;
     private String avatar;
     private String phone;
+    private String wechatUserId; // 企业微信用户ID
     private Boolean enabled;
     private Long defaultWorkspaceId; // 用户默认工作空间ID
     private LocalDateTime createdAt;
@@ -89,6 +90,14 @@ public class User {
     
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+    
+    public String getWechatUserId() {
+        return wechatUserId;
+    }
+    
+    public void setWechatUserId(String wechatUserId) {
+        this.wechatUserId = wechatUserId;
     }
     
     public Boolean getEnabled() {
