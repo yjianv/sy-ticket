@@ -68,6 +68,10 @@ minio:
 # 企业微信配置
 wechat:
   webhook-url: https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=6c26fe37-1ddb-4b98-a853-b687228326d5
+  app:
+    corpid: your_corp_id_here  # 企业ID，需要替换为实际值
+    corpsecret: your_corp_secret_here  # 应用的Secret，需要替换为实际值
+    agentid: 1000001  # 应用的AgentId，需要替换为实际值
 
 # 应用配置
 app:

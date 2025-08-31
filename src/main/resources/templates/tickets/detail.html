@@ -337,11 +337,26 @@
                 <div class="mt-3">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">移交工单</h3>
                     <div class="mb-4">
-                        <label for="transfer-user" class="block text-sm font-medium text-gray-700 mb-2">移交给</label>
-                        <select id="transfer-user" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">选择用户</option>
-                            <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.realName}">用户</option>
-                        </select>
+                        <label for="transfer-user-search" class="block text-sm font-medium text-gray-700 mb-2">移交给</label>
+                        <div class="relative">
+                            <input type="text" 
+                                   id="transfer-user-search" 
+                                   placeholder="搜索用户姓名..."
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                                   autocomplete="off">
+                            <input type="hidden" id="transfer-user" value="">
+                            
+                            <!-- 搜索结果下拉列表 -->
+                            <div id="transfer-user-dropdown" class="absolute z-50 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto hidden">
+                                <div id="transfer-user-loading" class="px-3 py-2 text-gray-500 text-center hidden">
+                                    <i class="fas fa-spinner fa-spin mr-2"></i>搜索中...
+                                </div>
+                                <div id="transfer-user-empty" class="px-3 py-2 text-gray-500 text-center hidden">
+                                    未找到匹配的用户
+                                </div>
+                                <div id="transfer-user-list"></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-4">
                         <label for="transfer-reason" class="block text-sm font-medium text-gray-700 mb-2">移交原因</label>
@@ -415,6 +430,9 @@
                 e.preventDefault();
                 submitComment();
             });
+            
+            // 初始化用户搜索功能
+            initUserSearch();
         });
         
         // 初始化只读编辑器
@@ -533,7 +551,9 @@
         function hideTransferModal() {
             $('#transfer-modal').addClass('hidden');
             $('#transfer-user').val('');
+            $('#transfer-user-search').val('');
             $('#transfer-reason').val('');
+            hideUserDropdown();
         }
         
         // 提交移交
@@ -622,6 +642,126 @@
         function toggleImageZoom() {
             const previewImg = document.getElementById('preview-image');
             previewImg.classList.toggle('zoomed');
+        }
+        
+        // 用户搜索相关变量
+        let userSearchTimeout;
+        let selectedUser = null;
+        
+        // 初始化用户搜索功能
+        function initUserSearch() {
+            const searchInput = $('#transfer-user-search');
+            
+            // 搜索输入事件
+            searchInput.on('input', function() {
+                const keyword = $(this).val().trim();
+                
+                // 清除之前的定时器
+                if (userSearchTimeout) {
+                    clearTimeout(userSearchTimeout);
+                }
+                
+                // 延迟搜索，避免频繁请求
+                userSearchTimeout = setTimeout(() => {
+                    if (keyword.length >= 1) {
+                        searchUsers(keyword);
+                    } else {
+                        hideUserDropdown();
+                    }
+                }, 300);
+            });
+            
+            // 点击输入框显示搜索结果
+            searchInput.on('focus', function() {
+                const keyword = $(this).val().trim();
+                if (keyword.length >= 1) {
+                    searchUsers(keyword);
+                }
+            });
+            
+            // 点击其他地方隐藏下拉列表
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('#transfer-user-search, #transfer-user-dropdown').length) {
+                    hideUserDropdown();
+                }
+            });
+        }
+        
+        // 搜索用户
+        function searchUsers(keyword) {
+            const dropdown = $('#transfer-user-dropdown');
+            const loading = $('#transfer-user-loading');
+            const empty = $('#transfer-user-empty');
+            const list = $('#transfer-user-list');
+            
+            // 显示加载状态
+            dropdown.removeClass('hidden');
+            loading.removeClass('hidden');
+            empty.addClass('hidden');
+            list.empty();
+            
+            $.ajax({
+                url: '/api/users/search',
+                type: 'GET',
+                data: { keyword: keyword, limit: 10 },
+                success: function(response) {
+                    loading.addClass('hidden');
+                    
+                    if (response.success && response.users && response.users.length > 0) {
+                        displayUserResults(response.users);
+                    } else {
+                        empty.removeClass('hidden');
+                    }
+                },
+                error: function() {
+                    loading.addClass('hidden');
+                    empty.removeClass('hidden');
+                    list.html('<div class="px-3 py-2 text-red-500 text-center">搜索失败，请重试</div>');
+                }
+            });
+        }
+        
+        // 显示用户搜索结果
+        function displayUserResults(users) {
+            const list = $('#transfer-user-list');
+            list.empty();
+            
+            users.forEach(function(user) {
+                const item = $(`
+                    <div class="user-item px-3 py-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0" 
+                         data-user-id="${user.id}" 
+                         data-user-name="${user.realName}">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium mr-3">
+                                ${user.realName.substring(0,1)}
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-900">${user.realName}</div>
+                                <div class="text-sm text-gray-500">${user.username}</div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+                
+                item.on('click', function() {
+                    selectUser(user.id, user.realName);
+                });
+                
+                list.append(item);
+            });
+        }
+        
+        // 选择用户
+        function selectUser(userId, userName) {
+            $('#transfer-user').val(userId);
+            $('#transfer-user-search').val(userName);
+            selectedUser = { id: userId, name: userName };
+            hideUserDropdown();
+        }
+        
+        // 隐藏用户下拉列表
+        function hideUserDropdown() {
+            $('#transfer-user-dropdown').addClass('hidden');
         }
     </script>
 </th:block>

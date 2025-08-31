@@ -84,6 +84,20 @@ public class UserService {
     }
     
     /**
+     * 根据关键词搜索用户
+     * 
+     * @param keyword 搜索关键词
+     * @param limit 限制返回数量，默认20
+     * @return 用户列表
+     */
+    public List<User> searchUsers(String keyword, Integer limit) {
+        if (limit == null || limit <= 0) {
+            limit = 20; // 默认限制20个结果
+        }
+        return userMapper.searchUsers(keyword, limit);
+    }
+    
+    /**
      * 检查用户名是否存在
      * 
      * @param username 用户名

@@ -62,4 +62,13 @@ public interface UserMapper {
      * @return 用户信息
      */
     User findByEmail(@Param("email") String email);
+    
+    /**
+     * 根据关键词搜索用户
+     * 
+     * @param keyword 搜索关键词
+     * @param limit 限制返回数量
+     * @return 用户列表
+     */
+    List<User> searchUsers(@Param("keyword") String keyword, @Param("limit") Integer limit);
 }

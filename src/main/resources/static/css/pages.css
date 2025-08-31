@@ -1182,6 +1182,19 @@
   z-index: calc(var(--z-modal) + 1) !important;
 }
 
+/* 用户搜索下拉框样式 */
+.user-item:hover {
+  background-color: #eff6ff;
+}
+
+.user-item:last-child {
+  border-bottom: none;
+}
+
+#transfer-user-dropdown {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
 /* 确保EditorJS组件不会覆盖模态框 */
 .codex-editor .ce-toolbar,
 .codex-editor .ce-conversion-toolbar,
