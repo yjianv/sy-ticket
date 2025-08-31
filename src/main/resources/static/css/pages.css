@@ -1170,3 +1170,23 @@
 #preview-image[alt]:after {
   display: block;
 }
+
+/* ===== 工单详情页面专用样式 Ticket Detail Page Specific Styles ===== */
+
+/* 移交工单模态框 - 确保在所有内容之上 */
+#transfer-modal {
+  z-index: var(--z-modal) !important;
+}
+
+#transfer-modal > div {
+  z-index: calc(var(--z-modal) + 1) !important;
+}
+
+/* 确保EditorJS组件不会覆盖模态框 */
+.codex-editor .ce-toolbar,
+.codex-editor .ce-conversion-toolbar,
+.codex-editor .ce-settings,
+.codex-editor .ce-popover,
+.codex-editor .ce-tooltip {
+  z-index: calc(var(--z-modal) - 10) !important;
+}
