@@ -73,10 +73,6 @@ wechat:
     corpsecret: your_corp_secret_here  # 应用的Secret，需要替换为实际值
     agentid: 1000001  # 应用的AgentId，需要替换为实际值
 
-# 应用配置
-app:
-  upload-path: /tmp/sy-ticket/uploads/
-  
 # 日志配置
 logging:
   level:
